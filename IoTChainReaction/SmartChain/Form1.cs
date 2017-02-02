@@ -50,14 +50,13 @@ namespace SmartChain
         private void SubscribeToWMIInstances()
         {
             WqlEventQuery insertQuery = new WqlEventQuery("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
-
             ManagementEventWatcher insertWatcher = new ManagementEventWatcher(insertQuery);
-            insertWatcher.EventArrived += new EventArrivedEventHandler(DeviceInsertedEvent);
+            insertWatcher.EventArrived += DeviceInsertedEvent;
             insertWatcher.Start();
 
             WqlEventQuery removeQuery = new WqlEventQuery("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub'");
             ManagementEventWatcher removeWatcher = new ManagementEventWatcher(removeQuery);
-            removeWatcher.EventArrived += new EventArrivedEventHandler(DeviceRemovedEvent);
+            removeWatcher.EventArrived += DeviceRemovedEvent;
             removeWatcher.Start();
         }
 
@@ -68,7 +67,8 @@ namespace SmartChain
         #endregion
         private void ConnectWhiteCube()
         {
-            m_WhiteCubeClient = new MqttClient("139.162.222.115", 80, false, null, MqttSslProtocols.None, null, null);
+            m_WhiteCubeClient = new MqttClient(Properties.Settings.Default.MQTTServerAddress,
+                Properties.Settings.Default.MQTTServerPort, false, null, MqttSslProtocols.None, null, null);
             m_WhiteCubeClient.Subscribe(new string[] { "matzi/#" }, new byte[] { 0 });
             m_WhiteCubeClient.MqttMsgSubscribed += Client_MqttMsgSubscribed;
             m_WhiteCubeClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;

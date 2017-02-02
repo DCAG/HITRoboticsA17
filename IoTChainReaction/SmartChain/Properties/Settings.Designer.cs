@@ -22,5 +22,23 @@ namespace SmartChain.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("139.162.222.115")]
+        public string MQTTServerAddress {
+            get {
+                return ((string)(this["MQTTServerAddress"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("80")]
+        public int MQTTServerPort {
+            get {
+                return ((int)(this["MQTTServerPort"]));
+            }
+        }
     }
 }
