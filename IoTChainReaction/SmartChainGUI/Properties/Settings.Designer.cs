@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SmartChain.Properties {
+namespace SmartChainLib.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -38,6 +38,33 @@ namespace SmartChain.Properties {
         public int MQTTServerPort {
             get {
                 return ((int)(this["MQTTServerPort"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("MATZI")]
+        public string MQTTUserName {
+            get {
+                return ((string)(this["MQTTUserName"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("MATZI")]
+        public string MQTTPassword {
+            get {
+                return ((string)(this["MQTTPassword"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public ushort KeepAlivePeriod {
+            get {
+                return ((ushort)(this["KeepAlivePeriod"]));
             }
         }
     }

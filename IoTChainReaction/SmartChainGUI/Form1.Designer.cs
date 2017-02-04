@@ -1,4 +1,4 @@
-﻿namespace SmartChain
+﻿namespace SmartChainLib
 {
     partial class Form1
     {
