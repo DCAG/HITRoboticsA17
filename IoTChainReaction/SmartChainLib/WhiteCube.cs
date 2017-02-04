@@ -33,6 +33,12 @@ namespace SmartChainLib
             m_WhiteCubeClient = new MqttClient(Properties.Settings.Default.MQTTServerAddress,
                 Properties.Settings.Default.MQTTServerPort, false, null, null, MqttSslProtocols.None, null);
 
+            //"matzi/#"
+            //"matzi/led/status"
+            //"matzi/+/status"
+            //"[username]/[device]/status"
+
+            //"matzi/led/command", { "device_name":"3PI_8505689","";"","":1}
             m_WhiteCubeClient.Subscribe(new string[] { "matzi/#" }, new byte[] { 0 });
             m_WhiteCubeClient.MqttMsgSubscribed += Client_MqttMsgSubscribed;
             m_WhiteCubeClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
