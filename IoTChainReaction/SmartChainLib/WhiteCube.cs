@@ -43,6 +43,16 @@ namespace SmartChainLib
             m_WhiteCubeClient.MqttMsgSubscribed += Client_MqttMsgSubscribed;
             m_WhiteCubeClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
             byte ConnResult = m_WhiteCubeClient.Connect(GenerateSessionID(), Properties.Settings.Default.MQTTUserName, Properties.Settings.Default.MQTTPassword, v_CleanSession, Properties.Settings.Default.KeepAlivePeriod);
+
+            /*
+            Button:
+                { "device_name":"3PI_1206876", "type":"button", "ipaddress":"192.168.8.246", "bgn":3, "uptime":58, "sdk":"1.4.0", "version":"0.2.1" }
+                onclick:
+                { "device_name":"3PI_1206876", "type":"button" }
+                onrelease:
+                { "device_name":"3PI_1206876", "type":"button" } X 2 (click and release)
+             */
+
         }
 
         void Send()
