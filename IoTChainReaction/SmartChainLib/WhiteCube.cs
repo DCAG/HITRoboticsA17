@@ -17,7 +17,7 @@ namespace SmartChainLib
 
         MqttClient m_WhiteCubeClient;
 
-        WhiteCube()
+        public WhiteCube()
         {
             m_HostName = Properties.Settings.Default.MQTTServerAddress;
             m_Port = Properties.Settings.Default.MQTTServerPort;
