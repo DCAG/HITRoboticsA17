@@ -2,7 +2,7 @@
 {
     public enum eLEDState
     {
-        On  = 0,
-        Off = 1
+        Off = 0,
+        On  = 1,
     }
 }

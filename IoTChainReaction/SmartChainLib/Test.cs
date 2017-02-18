@@ -9,106 +9,116 @@ namespace SmartChainLib
 {
     class Test
     {
-        //WhiteCube m_WhiteCube;
+        static WhiteCube m_WhiteCube;
+        static Arduino m_Arduino;
+
+        static Test()
+        {
+            m_Arduino = new Arduino();
+            m_WhiteCube = new WhiteCube();
+            m_WhiteCube.ButtonSensorStateChange += Button_Clicked;
+        }
+
         public static void Main()
         {
-            Arduino ard = new Arduino();
+            m_Arduino = new Arduino();
             //ard.AutoDetectArduinoPort();
             foreach (var i in (new int[] { 1, 2, 3, 4, 5, 6 }))
             {
-                ard.WriteLine("AL0");
+                m_Arduino.WriteLine("AL0");
                 Thread.Sleep(1000);
-                ard.WriteLine("AL1");
+                m_Arduino.WriteLine("AL1");
                 Thread.Sleep(1000);
             }
             //Console.ReadLine();
 
-            ard.LEDStateChange += Ard_LEDStateChange;
-            ard.RGBLEDStateChange += Ard_RGBLEDStateChange;
-            ard.StepMotorStateChange += Ard_StepMotorStateChange;
-            ard.ServoMotorStateChange += Ard_ServoMotorStateChange;
+            //Actuators
+            m_Arduino.LEDStateChange += Ard_LEDStateChange;
+            m_Arduino.RGBLEDStateChange += Ard_RGBLEDStateChange;
+            m_Arduino.StepMotorStateChange += Ard_StepMotorStateChange;
+            m_Arduino.ServoMotorStateChange += Ard_ServoMotorStateChange;
 
+            //Sensors:
+            m_WhiteCube.ButtonSensorStateChange += M_WhiteCube_ButtonSensorStateChange;
+            m_WhiteCube.ReedSensorStateChange += M_WhiteCube_ReedSensorStateChange;
+            m_WhiteCube.LightSensorStateChange += M_WhiteCube_LightSensorStateChange;
+            m_WhiteCube.DHTSensorStateChange += M_WhiteCube_DHTSensorStateChange;
+        }
+
+        private static void M_WhiteCube_DHTSensorStateChange(float i_Tempeprature, float i_Humidity)
+        {
+            throw new NotImplementedException();
+            //update GUI
+        }
+
+        private static void M_WhiteCube_LightSensorStateChange(int i_Value)
+        {
+            throw new NotImplementedException();
+            //update GUI
+        }
+
+        private static void M_WhiteCube_ReedSensorStateChange()
+        {
+            throw new NotImplementedException();
+            //update GUI
+        }
+
+        private static void M_WhiteCube_ButtonSensorStateChange()
+        {
+            throw new NotImplementedException();
+            //update GUI
         }
 
         private static void Ard_ServoMotorStateChange(eServoMotorState i_State)
         {
             throw new NotImplementedException();
+            //update GUI
         }
 
         private static void Ard_StepMotorStateChange(eStepMotorState i_State)
         {
             throw new NotImplementedException();
+            //update GUI
         }
 
         private static void Ard_RGBLEDStateChange(eRGBLEDState i_State)
         {
             throw new NotImplementedException();
+            //update GUI
         }
 
         private static void Ard_LEDStateChange(eLEDState i_State)
         {
             throw new NotImplementedException();
+            //update GUI
         }
-
-        Test()
-        {
-            m_WhiteCube = new WhiteCube();
-            m_WhiteCube.ButtonClick += OnButtonClicked;
-        }
-        #region actuator
-        public void SetLightScreen(int state)
-        {
-
-        }
-
-        public void SetServoMotor(int state)
-        {
-
-        }
-
-        public void SetRGB(int state)
-        {
-
-        }
-
-        public void SetStepMotor(int state)
-        {
-
-        }
-        #endregion
 
         #region sensors
-        public void OnButtonClicked(object sender, EventArgs e)
+        public static void Button_Clicked()
         {
-            m_WhiteCube.ButtonClick -= m_WhiteCube.OnButtonClicked;
-            SetLightScreen(50);
-            m_WhiteCube.LightSensorEvent += OnLightSensed;
-
+            m_WhiteCube.ButtonSensorStateChange -= Button_Clicked;
+            m_Arduino.SetLED(eLEDState.On);
+            m_WhiteCube.LightSensorStateChange += Light_Sensed;
         }
 
-        public void OnLightSensed(object sender, EventArgs e)
+        public static void Light_Sensed(int i_Value)
         {
-            m_WhiteCube.LightSensorEvent -= OnLightSensed;
-            SetServoMotor(45);
-            m_WhiteCube.ReedSensorEvent += OnReedMagnetSensed;
+            m_WhiteCube.LightSensorStateChange -= Light_Sensed;
+            m_Arduino.SetServoMotor(eServoMotorState.Deg180);
+            m_WhiteCube.ReedSensorStateChange += ReedMagnet_Sensed;
         }
 
-        public void OnReedMagnetSensed(object sender, EventArgs e)
+        public static void ReedMagnet_Sensed()
         {
-            m_WhiteCube.ReedSensorEvent -= OnReedMagnetSensed;
-            m_WhiteCube.DHTSensorEvent += OnDHTSensed;
-            SetStepMotor(1);
+            m_WhiteCube.ReedSensorStateChange -= ReedMagnet_Sensed;
+            m_WhiteCube.DHTSensorStateChange += DHT_Sensed;
+            m_Arduino.SetStepMotor(eStepMotorState.On);
         }
 
-        public void OnDHTSensed(object sender, EventArgs e)
+        public static void DHT_Sensed(float i_Temperature, float i_Humidity)
         {
-            m_WhiteCube.DHTSensorEvent -= OnDHTSensed;
-            SetRGB(0);
-        }
-
-        public void OnButtonClickedAgain(object sender, EventArgs e)
-        {
-            StopAndResetEverything();
+            m_WhiteCube.DHTSensorStateChange -= DHT_Sensed;
+            m_Arduino.SetRGBLED(eRGBLEDState.RGB);//value need to depend on both inputs (R - hot and humid, B - cold and dry....)
         }
         #endregion
         

@@ -18,10 +18,12 @@ namespace SmartChainLib
         event LightSensorStateChangeDelegate LightSensorStateChange;
         event ReedSensorStateChangeDelegate ReedSensorStateChange;
         event DHTSensorStateChangeDelegate DHTSensorStateChange;
-
+        
+        /*
         void OnButtonSensorStateChange();
         void OnLightSensorStateChange(int i_Value);
         void OnReedSensorStateChange();
         void OnDHTSensorStateChange(float i_Tempeprature, float i_Humidity);
+        */
     }
 }

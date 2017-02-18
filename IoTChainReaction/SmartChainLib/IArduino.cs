@@ -26,9 +26,11 @@ namespace SmartChainLib
         event StepMotorStateChangeDelegate StepMotorStateChange;
         event RGBLEDStateChangeDelegate RGBLEDStateChange;
 
+        /*
         void OnLEDStateChange(eLEDState i_State);
         void OnServoMotorStateChange(eServoMotorState i_State);
         void OnStepMotorStateChange(eStepMotorState i_State);
         void OnRGBLEDStateChange(eRGBLEDState i_State);
+        */
     }
 }

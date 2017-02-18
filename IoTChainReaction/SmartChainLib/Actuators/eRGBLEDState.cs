@@ -3,9 +3,9 @@
     public enum eRGBLEDState
     {
         Off = 0,
-        G   = 1,
-        B   = 2,
-        BG  = 3,
+        B   = 1,
+        G   = 2,
+        GB  = 3,
         R   = 4,
         RB  = 5,
         RG  = 6,

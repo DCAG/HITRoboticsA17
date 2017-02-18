@@ -2,7 +2,7 @@
 {
     public enum eStepMotorState
     {
-        On,
-        Off
+        Off = 0,
+        On  = 1
     }
 }

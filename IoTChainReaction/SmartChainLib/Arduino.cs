@@ -13,12 +13,22 @@ namespace SmartChainLib
     {
         SerialPort m_ArduinoConnection;
 
+        private bool m_IsConnectedToComputer;
+        public bool IsConnectedToComputer
+        {
+            get
+            {
+                return m_IsConnectedToComputer;
+            }
+        }
+
         private string m_Port;
         private string m_VID;
         private string m_PID;
 
-        public event EventArrivedEventHandler OnDeviceArrival;
-        public event EventArrivedEventHandler OnDeviceRemoval;
+        //public event EventArrivedEventHandler OnDeviceArrival;
+        //public event EventArrivedEventHandler OnDeviceRemoval;
+
         public event LEDStateChangeDelegate LEDStateChange;
         public event ServoMotorStateChangeDelegate ServoMotorStateChange;
         public event StepMotorStateChangeDelegate StepMotorStateChange;
@@ -26,6 +36,7 @@ namespace SmartChainLib
 
         public Arduino()
         {
+            m_IsConnectedToComputer = false;
             m_VID = Properties.Settings.Default.ArduinoPID;
             m_PID = Properties.Settings.Default.ArduinoVID;
             m_Port = Properties.Settings.Default.ArduinoCOMPort;
@@ -75,6 +86,7 @@ namespace SmartChainLib
             }
         }
 
+        #region Autodetect Arduino connection
         public void AutoDetectArduinoPort()
         {
             //OnDeviceArrival += OnArduinoArrival;
@@ -117,7 +129,9 @@ namespace SmartChainLib
             Console.WriteLine("Arrival m_Port =  {0}", m_Port);
             m_Port = string.Empty;
         }
+        #endregion
 
+        #region Sensors And Actuators
         public void SetLED(eLEDState i_State)
         {
             WriteLine(string.Format("AL{0}", (int)i_State));
@@ -138,7 +152,7 @@ namespace SmartChainLib
             WriteLine(string.Format("AR{0}", (int)i_State));
         }
 
-        public void OnLEDStateChange(eLEDState i_State)
+        private void OnLEDStateChange(eLEDState i_State)
         {
             if(LEDStateChange != null)
             {
@@ -146,7 +160,7 @@ namespace SmartChainLib
             }
         }
 
-        public void OnServoMotorStateChange(eServoMotorState i_State)
+        private void OnServoMotorStateChange(eServoMotorState i_State)
         {
             if (ServoMotorStateChange != null)
             {
@@ -154,7 +168,7 @@ namespace SmartChainLib
             }
         }
 
-        public void OnStepMotorStateChange(eStepMotorState i_State)
+        private void OnStepMotorStateChange(eStepMotorState i_State)
         {
             if (StepMotorStateChange != null)
             {
@@ -162,12 +176,13 @@ namespace SmartChainLib
             }
         }
 
-        public void OnRGBLEDStateChange(eRGBLEDState i_State)
+        private void OnRGBLEDStateChange(eRGBLEDState i_State)
         {
             if (RGBLEDStateChange != null)
             {
                 RGBLEDStateChange.Invoke(i_State);
             }
         }
+        #endregion
     }
 }
