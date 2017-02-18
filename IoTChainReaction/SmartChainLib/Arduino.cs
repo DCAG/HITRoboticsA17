@@ -4,20 +4,25 @@ using System.IO.Ports;
 using System.Linq;
 using System.Management;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SmartChainLib
 {
-    public class Arduino
+    public class Arduino : IArduino
     {
+        SerialPort m_ArduinoConnection;
+
         private string m_Port;
         private string m_VID;
         private string m_PID;
 
         public event EventArrivedEventHandler OnDeviceArrival;
         public event EventArrivedEventHandler OnDeviceRemoval;
-
-        SerialPort m_ArduinoConnection;
+        public event LEDStateChangeDelegate LEDStateChange;
+        public event ServoMotorStateChangeDelegate ServoMotorStateChange;
+        public event StepMotorStateChangeDelegate StepMotorStateChange;
+        public event RGBLEDStateChangeDelegate RGBLEDStateChange;
 
         public Arduino()
         {
@@ -37,31 +42,58 @@ namespace SmartChainLib
             {
                 m_ArduinoConnection.Open();
             }
-            m_ArduinoConnection.WriteLine(message);
+            m_ArduinoConnection.WriteLine(message+"\n");
         }
 
         private void M_ArduinoConnection_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            m_ArduinoConnection.ReadLine(); ///WHERE the DATA GOES!!!!@!?@?!?@!?!@????????
+            string data = m_ArduinoConnection.ReadLine();
+
+            Regex regex = new Regex(@"^A(?<actuator>L|S|M|R)(?<state>\d)");
+            Match result = regex.Match(data);
+            if(result.Success)
+            {
+                string actuator = result.Groups["actuator"].Value;
+                int state = int.Parse(result.Groups["state"].Value);
+
+                if (actuator == "L")
+                {
+                    OnLEDStateChange((eLEDState)state);
+                }
+                else if(actuator == "S")
+                {
+                    OnServoMotorStateChange((eServoMotorState)state);
+                }
+                else if(actuator == "M")
+                {
+                    OnStepMotorStateChange((eStepMotorState)state);
+                }
+                else if(actuator == "R")
+                {
+                    OnRGBLEDStateChange((eRGBLEDState)state);
+                }
+            }
         }
 
         public void AutoDetectArduinoPort()
         {
+            //OnDeviceArrival += OnArduinoArrival;
+            //OnDeviceRemoval += OnArduinoRemoval;
             subscribeToWMIInstances();
-            OnDeviceArrival += OnArduinoArrival;
-            OnDeviceRemoval += OnArduinoRemoval;
         }
 
         private void subscribeToWMIInstances()
         {
-            string deviceArrivalQuery = string.Format("SELECT * FROM __InstanceCreationEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub' AND TargetInstance.DeviceID LIKE '%VID_{0}`&PID_{1}%'", m_VID, m_PID);
+            string serialDeviceQuery = "SELECT * FROM {0} WITHIN 2 WHERE TargetInstance ISA 'Win32_SerialPort' AND TargetInstance.PNPDeviceID LIKE '%VID_{1}&PID_{2}%'";
+
+            string deviceArrivalQuery = string.Format(serialDeviceQuery, "__InstanceCreationEvent", m_VID, m_PID);
             ManagementEventWatcher arrivalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceArrivalQuery));
-            arrivalWatcher.EventArrived += OnDeviceArrival;
+            arrivalWatcher.EventArrived += OnArduinoArrival; //OnDeviceArrival;
             arrivalWatcher.Start();
 
-            string deviceRemovalQuery = string.Format("SELECT * FROM __InstanceDeletionEvent WITHIN 2 WHERE TargetInstance ISA 'Win32_USBHub' AND TargetInstance.DeviceID LIKE '%VID_{0}`&PID_{1}%'", m_VID, m_PID);
+            string deviceRemovalQuery = string.Format(serialDeviceQuery, "__InstanceDeletionEvent", m_VID, m_PID);
             ManagementEventWatcher removalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceRemovalQuery));
-            removalWatcher.EventArrived += OnDeviceRemoval;
+            removalWatcher.EventArrived += OnArduinoRemoval;  //OnDeviceRemoval;
             removalWatcher.Start();
         }
 
@@ -69,11 +101,73 @@ namespace SmartChainLib
         {
             ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
             m_Port = (string)instance["COMPort"];
+            Console.WriteLine("Arrival m_Port =  {0}", m_Port);
+            WriteLine("1Hello");
+            WriteLine("2World");
+            WriteLine("3Arduino repeat the time");
+            WriteLine("4" + DateTime.Now.ToString());
+            WriteLine("5Hello");
+            WriteLine("6Hello");
+            WriteLine("7Hello");
+            WriteLine("9Hello");
         }
 
         private void OnArduinoRemoval(object sender, EventArrivedEventArgs e)
         {
+            Console.WriteLine("Arrival m_Port =  {0}", m_Port);
             m_Port = string.Empty;
+        }
+
+        public void SetLED(eLEDState i_State)
+        {
+            WriteLine(string.Format("AL{0}", (int)i_State));
+        }
+
+        public void SetServoMotor(eServoMotorState i_State)
+        {
+            WriteLine(string.Format("AS{0}", (int)i_State));
+        }
+
+        public void SetStepMotor(eStepMotorState i_State)
+        {
+            WriteLine(string.Format("AM{0}", (int)i_State));
+        }
+
+        public void SetRGBLED(eRGBLEDState i_State)
+        {
+            WriteLine(string.Format("AR{0}", (int)i_State));
+        }
+
+        public void OnLEDStateChange(eLEDState i_State)
+        {
+            if(LEDStateChange != null)
+            {
+                LEDStateChange.Invoke(i_State);
+            }
+        }
+
+        public void OnServoMotorStateChange(eServoMotorState i_State)
+        {
+            if (ServoMotorStateChange != null)
+            {
+                ServoMotorStateChange.Invoke(i_State);
+            }
+        }
+
+        public void OnStepMotorStateChange(eStepMotorState i_State)
+        {
+            if (StepMotorStateChange != null)
+            {
+                StepMotorStateChange.Invoke(i_State);
+            }
+        }
+
+        public void OnRGBLEDStateChange(eRGBLEDState i_State)
+        {
+            if (RGBLEDStateChange != null)
+            {
+                RGBLEDStateChange.Invoke(i_State);
+            }
         }
     }
 }

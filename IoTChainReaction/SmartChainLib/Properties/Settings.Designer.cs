@@ -70,7 +70,7 @@ namespace SmartChainLib.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0951")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0043")]
         public string ArduinoPID {
             get {
                 return ((string)(this["ArduinoPID"]));
@@ -79,7 +79,7 @@ namespace SmartChainLib.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1666")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2341")]
         public string ArduinoVID {
             get {
                 return ((string)(this["ArduinoVID"]));

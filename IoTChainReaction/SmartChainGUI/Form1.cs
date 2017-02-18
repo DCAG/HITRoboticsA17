@@ -13,13 +13,13 @@ namespace SmartChainLib
 {
     public partial class Form1 : Form
     {
-        MqttClient m_WhiteCubeClient;
+        //MqttClient m_WhiteCubeClient;
 
         public Form1()
         {
             InitializeComponent();
-            ConnectArduino();
-            ConnectWhiteCube();
+            //ConnectArduino();
+            //ConnectWhiteCube();
         }
 
 
@@ -60,6 +60,9 @@ namespace SmartChainLib
         private void button1_Click(object sender, EventArgs e)
         {
             button1.Text = "clicked";
+            actionsGroupBox.Enabled = !actionsGroupBox.Enabled;
+            colorDialog1.ShowDialog();
+            button1.Text = colorDialog1.Color.ToString();
         }
     }
 }

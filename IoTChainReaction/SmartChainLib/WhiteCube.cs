@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace SmartChainLib
 {
-    public class WhiteCube
+    public class WhiteCube : IWhiteCube
     {
         private string m_HostName;
         private int m_Port;
@@ -16,6 +18,11 @@ namespace SmartChainLib
         private ushort m_KeepAlivePeriod;
 
         MqttClient m_WhiteCubeClient;
+
+        public event ButtonSensorStateChangeDelegate ButtonSensorStateChange;
+        public event LightSensorStateChangeDelegate LightSensorStateChange;
+        public event ReedSensorStateChangeDelegate ReedSensorStateChange;
+        public event DHTSensorStateChangeDelegate DHTSensorStateChange;
 
         public WhiteCube()
         {
@@ -55,6 +62,21 @@ namespace SmartChainLib
 
         }
 
+        private string GenerateSessionID()
+        {
+            return Guid.NewGuid().ToString().Split('-')[4].Substring(0, 10);
+        }
+
+        private void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Client_MqttMsgSubscribed(object sender, MqttMsgSubscribedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         void Send()
         {
 
@@ -62,8 +84,70 @@ namespace SmartChainLib
 
         void Recieve()
         {
+            dynamic buttonJson = JsonConvert.SerializeObject("{ \"device_name\":\"3PI_1206876\", \"type\":\"button\" }");
+            if(buttonJson.type == "button")
+            {
+                OnButtonSensorStateChange();
+            }
+            else if(buttonJson.type == "light")
+            {
+                OnLightSensorStateChange(buttonJson.value);
+            }
+            else if(buttonJson.type == "reed")
+            {
+                OnReedSensorStateChange();
+            }
+            else if(buttonJson.type == "dht")
+            {
+                OnDHTSensorStateChange(buttonJson.temp, buttonJson.humid);
+            }
+        }
 
+        public void OnButtonSensorStateChange()
+        {
+            if(ButtonSensorStateChange != null)
+            {
+                ButtonSensorStateChange.Invoke();
+            }
+        }
 
+        public void OnLightSensorStateChange(int i_Value)
+        {
+            if(LightSensorStateChange != null)
+            {
+                LightSensorStateChange.Invoke(i_Value);
+            }
+        }
+
+        public void OnReedSensorStateChange()
+        {
+            if(ReedSensorStateChange != null)
+            {
+                ReedSensorStateChange.Invoke();
+            }
+        }
+
+        public void OnDHTSensorStateChange(float i_Tempeprature, float i_Humidity)
+        {
+            if(DHTSensorStateChange != null)
+            {
+                DHTSensorStateChange.Invoke(i_Tempeprature, i_Humidity);
+            }
+        }
+
+        public void RequestSensorStatus(eWhiteCubeSensor i_Sensor)
+        {
+            switch (i_Sensor)
+            {
+                case eWhiteCubeSensor.button:
+                case eWhiteCubeSensor.reed:
+                    //nothing
+                    break;
+                case eWhiteCubeSensor.dht:
+                case eWhiteCubeSensor.light:
+                    m_WhiteCubeClient.Publish(string.Format("{0}/{1}/status", m_UserName, i_Sensor),new byte[] { 0 });
+                    break;
+            }
         }
     }
 }

@@ -56,6 +56,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arduino.cs" />
+    <Compile Include="eLEDState.cs" />
+    <Compile Include="eRGBLEDState.cs" />
+    <Compile Include="eServoMotorState.cs" />
+    <Compile Include="eStepMotorState.cs" />
+    <Compile Include="eWhiteCubeSensor.cs" />
+    <Compile Include="IArduino.cs" />
+    <Compile Include="IWhiteCube.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
