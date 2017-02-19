@@ -23,7 +23,7 @@ namespace SmartChainLib
         public event ButtonSensorStateChangeDelegate ButtonSensorStateChange;
         public event LightSensorStateChangeDelegate LightSensorStateChange;
         public event ReedSensorStateChangeDelegate ReedSensorStateChange;
-        public event DHTSensorStateChangeDelegate DHTSensorStateChange;
+        public event DTHSensorStateChangeDelegate DTHSensorStateChange;
 
         public WhiteCube()
         {
@@ -32,28 +32,23 @@ namespace SmartChainLib
             m_UserName = Properties.Settings.Default.MQTTUserName;
             m_Password = Properties.Settings.Default.MQTTPassword;
             m_KeepAlivePeriod = Properties.Settings.Default.KeepAlivePeriod;
+            Connect();
         }
 
 
         private void Connect()
         {
             const bool v_CleanSession = true;
-            m_WhiteCubeClient = new MqttClient(Properties.Settings.Default.MQTTServerAddress,
-                Properties.Settings.Default.MQTTServerPort, false, null, null, MqttSslProtocols.None, null);
+            m_WhiteCubeClient = new MqttClient(m_HostName, m_Port, false, null, null, MqttSslProtocols.None, null);
 
-            string allMessages = string.Format("{0}/#", m_UserName);
+            string allMessages = string.Format("{0}/#", m_UserName.ToLower());
+            byte qosLevel = 0;
 
-            m_WhiteCubeClient.Subscribe(new string[] { allMessages }, new byte[] { 0 });
+            m_WhiteCubeClient.Subscribe(new string[] { allMessages }, new byte[] { qosLevel });
             m_WhiteCubeClient.MqttMsgSubscribed += Client_MqttMsgSubscribed;
             m_WhiteCubeClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
-            byte ConnResult = m_WhiteCubeClient.Connect(
-                GenerateSessionID(),
-                Properties.Settings.Default.MQTTUserName,
-                Properties.Settings.Default.MQTTPassword,
-                v_CleanSession,
-                Properties.Settings.Default.KeepAlivePeriod
-                );
+            byte ConnResult = m_WhiteCubeClient.Connect(GenerateSessionID(), m_UserName, m_Password, v_CleanSession, m_KeepAlivePeriod);
 
             /*
             Subscriptions:
@@ -85,33 +80,35 @@ namespace SmartChainLib
         {
             try
             {
-                dynamic messageJson = JsonConvert.SerializeObject(Encoding.UTF8.GetString(e.Message)); //("{ \"device_name\":\"3PI_1206876\", \"type\":\"button\" }");
+                dynamic messageJson = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(e.Message)); //("{ \"device_name\":\"3PI_1206876\", \"type\":\"button\" }");
+                if (messageJson.ipaddress != null)
+                    return; // { "device_name":"3PI_1206876", "type":"button", "ipaddress":"192.168.8.246", "bgn":3, "uptime":21, "sdk":"1.4.0", "version":"0.2.1" }
                 if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
                 {
                     OnButtonSensorStateChange();
                 }
                 else if ((string)messageJson.type == eWhiteCubeSensor.light.ToString())
                 {
-                    OnLightSensorStateChange(messageJson.value);
+                    OnLightSensorStateChange((int)messageJson.value); //{ "device_name":"3PI_1152554", "type":"light", "value":"185" }
                 }
                 else if ((string)messageJson.type == eWhiteCubeSensor.reed.ToString())
                 {
                     OnReedSensorStateChange();
                 }
-                else if ((string)messageJson.type == eWhiteCubeSensor.dht.ToString())
+                else if ((string)messageJson.type == eWhiteCubeSensor.dth.ToString())
                 {
-                    OnDHTSensorStateChange(messageJson.temp, messageJson.humid);
+                    OnDTHSensorStateChange((float)messageJson.temperature, (float)messageJson.humidity); //{ "device_name":"3PI_13775673", "type":"dth", "temperature":"20.0", "humidity":"20.0" }
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                //alert of wrong incoming message - where to?
+                //Console.WriteLine(ex.Message);//Encoding.UTF8.GetString(e.Message));//alert of wrong incoming message - where to?
             }
         }
 
         private void Client_MqttMsgSubscribed(object sender, MqttMsgSubscribedEventArgs e)
         {
-            //alert of wrong incoming message - where to?
+            //Console.WriteLine("{0}\nQoS:{1}, MsgId:{2}",e, Encoding.UTF8.GetString(e.GrantedQoSLevels) ,e.MessageId);//alert of wrong incoming message - where to?
         }
 
         private void OnButtonSensorStateChange()
@@ -138,11 +135,11 @@ namespace SmartChainLib
             }
         }
 
-        private void OnDHTSensorStateChange(float i_Tempeprature, float i_Humidity)
+        private void OnDTHSensorStateChange(float i_Tempeprature, float i_Humidity)
         {
-            if(DHTSensorStateChange != null)
+            if(DTHSensorStateChange != null)
             {
-                DHTSensorStateChange.Invoke(i_Tempeprature, i_Humidity);
+                DTHSensorStateChange.Invoke(i_Tempeprature, i_Humidity);
             }
         }
 
@@ -154,7 +151,7 @@ namespace SmartChainLib
                 case eWhiteCubeSensor.reed:
                     //do not send ahything - when these sensors detect something they will send a message.
                     break;
-                case eWhiteCubeSensor.dht:
+                case eWhiteCubeSensor.dth:
                 case eWhiteCubeSensor.light:
                     m_WhiteCubeClient.Publish(string.Format("{0}/{1}/status", m_UserName, i_Sensor),new byte[] { 0 });
                     break;

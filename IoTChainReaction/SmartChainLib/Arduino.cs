@@ -59,7 +59,7 @@ namespace SmartChainLib
         private void M_ArduinoConnection_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string data = m_ArduinoConnection.ReadLine();
-
+            
             Regex regex = new Regex(@"^A(?<actuator>L|S|M|R)(?<state>\d)");
             Match result = regex.Match(data);
             if(result.Success)

@@ -4,7 +4,7 @@
     {
         button,
         light,
-        dht,
+        dth,
         reed
     }
 }

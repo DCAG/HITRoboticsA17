@@ -9,7 +9,7 @@ namespace SmartChainLib
     public delegate void ButtonSensorStateChangeDelegate();
     public delegate void LightSensorStateChangeDelegate(int i_Value);
     public delegate void ReedSensorStateChangeDelegate();
-    public delegate void DHTSensorStateChangeDelegate(float i_Tempeprature, float i_Humidity);
+    public delegate void DTHSensorStateChangeDelegate(float i_Tempeprature, float i_Humidity);
     public interface IWhiteCube
     {
         void RequestSensorStatus(eWhiteCubeSensor i_Sensor);
@@ -17,7 +17,7 @@ namespace SmartChainLib
         event ButtonSensorStateChangeDelegate ButtonSensorStateChange;
         event LightSensorStateChangeDelegate LightSensorStateChange;
         event ReedSensorStateChangeDelegate ReedSensorStateChange;
-        event DHTSensorStateChangeDelegate DHTSensorStateChange;
+        event DTHSensorStateChangeDelegate DTHSensorStateChange;
         
         /*
         void OnButtonSensorStateChange();
