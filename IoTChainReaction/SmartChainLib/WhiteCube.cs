@@ -39,7 +39,8 @@ namespace SmartChainLib
         private void Connect()
         {
             const bool v_CleanSession = true;
-            m_WhiteCubeClient = new MqttClient(m_HostName, m_Port, false, null, null, MqttSslProtocols.None, null);
+            const bool v_Secure = true;
+            m_WhiteCubeClient = new MqttClient(m_HostName, m_Port, !v_Secure, null, null, MqttSslProtocols.None, null);
 
             string allMessages = string.Format("{0}/#", m_UserName.ToLower());
             byte qosLevel = 0;
