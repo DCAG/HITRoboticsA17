@@ -14,30 +14,172 @@ namespace IOT
     delegate void UpdateTextBox(Control ctrl, string str);
     public partial class IOTPanel : Form
     {
-        //bool on = true;
-        bool toggleLight = true;
-        Timer t = new Timer();
-        private object textBox12;
-        private object textBox13;
-        private readonly object textBox14;
+        Timer m_ActuatorsReadyTimer;
+
+        private Timer m_SmartChainTimer;
+        private TimeSpan m_SmartChainRunTime;
         private Arduino m_Arduino;
         private WhiteCube m_WhiteCube;
-
-        public object TextBox9 { get; private set; }
-        public object TextBox8 { get; private set; }
+        private bool m_SmartChainActive;
 
         public IOTPanel()
         {
             InitializeComponent();
+            m_SmartChainActive = false;
+            m_ActuatorsReadyTimer = new Timer();
+            m_ActuatorsReadyTimer.Interval = 200;
+            m_ActuatorsReadyTimer.Tick += M_ActuatorsReadyTimer_Tick;
+
+            m_SmartChainTimer = new Timer();
+            m_SmartChainTimer.Interval = 1000;
+            m_SmartChainTimer.Tick += m_SmartChainTimer_Tick;
+            m_SmartChainRunTime = new TimeSpan(0, 0, 0);
+
             m_Arduino = new Arduino();
             m_Arduino.RGBLEDStateChange += M_Arduino_RGBLEDStateChange;
             m_Arduino.LEDStateChange += M_Arduino_LEDStateChange;
-            m_Arduino.SetLED(eLEDState.Off);
+            m_Arduino.ServoMotorStateChange += M_Arduino_ServoMotorStateChange;
+            m_Arduino.StepMotorStateChange += M_Arduino_StepMotorStateChange;
+
             m_WhiteCube = new WhiteCube();
             m_WhiteCube.LightSensorStateChange += M_WhiteCube_LightSensorStateChange;
             m_WhiteCube.ButtonSensorStateChange += M_WhiteCube_ButtonSensorStateChange;
             m_WhiteCube.ReedSensorStateChange += M_WhiteCube_ReedSensorStateChange;
             m_WhiteCube.DTHSensorStateChange += M_WhiteCube_DTHSensorStateChange;
+
+            resetActuators();
+        }
+
+        private void m_SmartChainTimer_Tick(object sender, EventArgs e)
+        {
+            m_SmartChainRunTime = m_SmartChainRunTime.Add(new TimeSpan(0, 0, 1));
+            RunTimeLabel.Text = m_SmartChainRunTime.ToString();
+        }
+
+        private void startSmartChainButton_Click(object sender, EventArgs e)
+        {
+            if (startSmartChainButton.Text != "Stop") // start chain
+            {
+                ActuatorsGroupBox.Enabled = false;
+                resetActuators();
+                m_ActuatorsReadyTimer.Start();
+            }
+            else
+            {
+                endSmartChain();
+            }
+        }
+
+        private void startChainWhenActuatorsReady()
+        {
+            m_SmartChainRunTime = new TimeSpan(0, 0, 0);
+            m_SmartChainActive = true;
+            m_WhiteCube.ButtonSensorStateChange += SmartChainButton_Clicked; // timer starts here - when button is clicked
+            startSmartChainButton.Text = "Stop";
+
+        }
+
+        private void M_ActuatorsReadyTimer_Tick(object sender, EventArgs e)
+        {
+            if (RgbTextBox.Text != "Off" ||
+            StepMotorTextBox.Text != "Off" ||
+            ServoMotorTextBox.Text != "Off" ||
+            LEDTextBox.Text != "Off")
+            {
+                return; // wait for next tick, actuators are not ready.
+            }
+            else
+            {
+                m_ActuatorsReadyTimer.Stop();
+                startChainWhenActuatorsReady();
+            }
+        }
+
+        private void IOTPanel_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            //m_Arduino.Disconnect();
+            //m_WhiteCube.Disconnect();
+        }
+
+        private void resetActuators()
+        {
+            if(LEDTextBox.Text != "Off")
+                m_Arduino.SetLED(eLEDState.Off);
+            if(ServoMotorTextBox.Text != "Off")
+                m_Arduino.SetServoMotor(eServoMotorState.Off);
+            if(StepMotorTextBox.Text != "Off")
+                m_Arduino.SetStepMotor(eStepMotorState.Off);
+            if(RgbTextBox.Text != "Off")
+                m_Arduino.SetRGBLED(eRGBLEDState.Off);
+        }
+
+        /// <summary>
+        /// Helper function that updates Control's text attribute immedietly.
+        /// </summary>
+        /// <param name="ctrl">the control to update</param>
+        /// <param name="str">set text to this input</param>
+        void UpdateControlsText(Control ctrl, string str)
+        {
+            if(ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(new UpdateTextBox(UpdateControlsText), ctrl, str);
+            }
+            else
+            {
+                ctrl.Text = str;
+            }
+        }
+
+        // Sensors status updaters
+
+        private void M_WhiteCube_DTHSensorStateChange(float i_Tempeprature, float i_Humidity)
+        {
+            UpdateControlsText(DTHSensorTextBox, "Temp:" + i_Tempeprature + "\r\n" + "Hum:" + i_Humidity);
+        }
+
+        private void M_WhiteCube_ReedSensorStateChange()
+        {
+            UpdateControlsText(ReedSensorTextBox , DateTime.Now.ToLongTimeString());
+        }
+
+        private void M_WhiteCube_ButtonSensorStateChange()
+        {
+            UpdateControlsText(ButtonSensorTextBox, DateTime.Now.ToLongTimeString());
+        }
+
+        private void M_WhiteCube_LightSensorStateChange(int i_Value)
+        {
+            UpdateControlsText(LightSensorTextBox , i_Value.ToString());
+        }
+
+        //Actuators status updaters
+
+        private void M_Arduino_StepMotorStateChange(eStepMotorState i_State)
+        {
+            if (StepMotorTextBox.InvokeRequired)
+            {
+                StepMotorTextBox.Invoke(new StepMotorStateChangeDelegate(M_Arduino_StepMotorStateChange), i_State);
+            }
+            else
+            {
+                UpdateControlsText(StepMotorTextBox, i_State.ToString());
+                if (m_SmartChainActive)
+                    StepMotorTextBox.BackColor = Color.Yellow;
+            }
+        }
+
+        private void M_Arduino_ServoMotorStateChange(eServoMotorState i_State)
+        {
+            if (ServoMotorTextBox.InvokeRequired)
+            {
+                ServoMotorTextBox.Invoke(new ServoMotorStateChangeDelegate(M_Arduino_ServoMotorStateChange), i_State);
+            }
+            else
+            {
+                UpdateControlsText(ServoMotorTextBox, i_State.ToString());
+                if (m_SmartChainActive)
+                    ServoMotorTextBox.BackColor = Color.Yellow;
+            }
         }
 
         private void M_Arduino_LEDStateChange(eLEDState i_State)
@@ -48,7 +190,7 @@ namespace IOT
             }
             else
             {
-                UpdateTextBoxControl(textBox5, i_State.ToString());
+                UpdateControlsText(LEDTextBox, i_State.ToString());
                 if (i_State == eLEDState.On)
                 {
                     LedButton.BackColor = Color.Red;
@@ -57,286 +199,188 @@ namespace IOT
                 {
                     LedButton.BackColor = Color.DarkGray;
                 }
+
+                if (m_SmartChainActive)
+                    LEDTextBox.BackColor = Color.Yellow;
             }
         }
 
         private void M_Arduino_RGBLEDStateChange(eRGBLEDState i_State)
         {
-            UpdateTextBoxControl(RgbTextBox, i_State.ToString());
-        }
-
-        void UpdateTextBoxControl(Control ctrl, string str)
-        {
-            if(ctrl.InvokeRequired)
+            if (RgbTextBox.InvokeRequired)
             {
-                ctrl.Invoke(new UpdateTextBox(UpdateTextBoxControl), ctrl, str);
+                RgbTextBox.Invoke(new RGBLEDStateChangeDelegate(M_Arduino_RGBLEDStateChange), i_State);
             }
             else
             {
-                ctrl.Text = str;
+                UpdateControlsText(RgbTextBox, i_State.ToString());
+                if (m_SmartChainActive)
+                {
+                    RgbTextBox.BackColor = Color.Yellow;
+                    endSmartChain();
+                }
             }
         }
 
-        private void M_WhiteCube_DTHSensorStateChange(float i_Tempeprature, float i_Humidity)
+        private void endSmartChain()
         {
-            UpdateTextBoxControl(TempSensorTextBox, "Temp:" + i_Tempeprature + "\r\n" + "Hum:" + i_Humidity);
+            m_SmartChainActive = false;
+            m_SmartChainTimer.Stop();
+            startSmartChainButton.Text = "Start Smart Chain";
+
+            RgbTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+            StepMotorTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+            ServoMotorTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+            LEDTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+
+            DTHSensorTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+            LightSensorTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+            ButtonSensorTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+            ReedSensorTextBox.BackColor = Color.FromKnownColor(KnownColor.Control);
+
+            ActuatorsGroupBox.Enabled = true;
         }
 
-        private void M_WhiteCube_ReedSensorStateChange()
+        //Actuators buttons
+
+        private void LEDButton_Click(object sender, EventArgs e)
         {
-            UpdateTextBoxControl(ReedSensorTextBox ,"DONE" + "\r\n" + DateTime.Now.ToLongTimeString());
-        }
-
-        private void M_WhiteCube_ButtonSensorStateChange()
-        {
-            UpdateTextBoxControl(ButtonSensorTextBox, DateTime.Now.ToLongTimeString());
-        }
-
-        private void M_WhiteCube_LightSensorStateChange(int i_Value)
-        {
-            UpdateTextBoxControl(LightSensorTextBox , i_Value.ToString());
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        /*private void button8_Click(object sender, EventArgs e)
-        {
-            
-        }*/
-        private void ButtunWBSensor_Click()
-        {
-            ButtonSensorTextBox.Text= "DONE"+"\r\n"+DateTime.Now.ToLongTimeString();
-        }
-        private void button9_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void reedWBSensor()
-        {
-            ReedSensorTextBox.Text="DONE"+"\r\n"+ DateTime.Now.ToLongTimeString(); 
-        }
-        
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-           
-            LedButton.Text = "LED";
-            textBox5.Enabled = false;
-            t.Interval = 1000;
-            t.Tick += new EventHandler(t_Tick);
-        }
-
-        private void t_Tick(object sender, EventArgs e)
-        {
-            //This will perform a flashlight effect
-            if(toggleLight)
-            {
-                LedButton.BackColor = Color.LimeGreen;
-                toggleLight = false;
-            }
-            else
-            {
-                LedButton.BackColor = Color.Gray;
-                toggleLight = true;
-            }
-        }
-
-        
-
-        private void textBox5_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox7_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox2_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-        //switch the button ON/OFF
-            //ON
-            if (textBox5.Text == "On")
+            if (LEDTextBox.Text == "On")
             {
                 m_Arduino.SetLED(eLEDState.Off);
-                //t.Stop(); //stop the flashlight effect
             }
-            else if ((textBox5.Text == "Off"))
+            else if ((LEDTextBox.Text == "Off"))
             {
                 m_Arduino.SetLED(eLEDState.On);
-                //t.Start(); //start the flashlight effect
             }
         }
 
-        private void button11_Click(object sender, EventArgs e)
+        private void StepMotorButton_Click(object sender, EventArgs e)
         {
-
+            if (StepMotorTextBox.Text == "On")
+                m_Arduino.SetStepMotor(eStepMotorState.Off);
+            else if (StepMotorTextBox.Text == "Off")
+                m_Arduino.SetStepMotor(eStepMotorState.On);
         }
 
-        private void button13_Click(object sender, EventArgs e)
+        private void ServoMotorButton_Click(object sender, EventArgs e)
         {
-
+            if (ServoMotorTextBox.Text == "On")
+                m_Arduino.SetServoMotor(eServoMotorState.Off);
+            else if (ServoMotorTextBox.Text == "Off")
+                m_Arduino.SetServoMotor(eServoMotorState.On);
         }
 
-        private void button14_Click(object sender, EventArgs e)
+        #region RGBLed Buttons
+        private void RedButton_Click(object sender, EventArgs e)
         {
-
+            m_Arduino.SetRGBLED(eRGBLEDState.Red);
         }
 
-        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        private void AzureButton_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            if (ServoMotortextBox.Text == "ON")
-                m_Arduino.SetServoMotor(eServoMotorState.Deg0);
-            else if (ServoMotortextBox.Text == "OFF")
-                m_Arduino.SetServoMotor(eServoMotorState.Deg180);
-        }
-
-      
-
-        private void textBox11_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button12_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox8_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox9_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button16_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-             
-
-        }
-
-        /* private void button6_Click(object sender, EventArgs e)
-         {
-
-         }*/
-        private void lightWBSensor_Click(int value)
-        {
-            LightSensorTextBox.Text = value + "\r\n" + DateTime.Now.ToLongTimeString();
-        }
-
-        /*private void button7_Click(object sender, EventArgs e)
-         {
-
-         }*/
-
-        private void tempHumWBSensor_Click(double tempUpdate,double humidityUpdate) //event reciever
-          {
-            button7.Text = tempUpdate + "C" + "\r\n" + humidityUpdate + "%";
-          }
-
-        
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox6_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button17_Click(object sender, EventArgs e)
-        {
-            m_Arduino.SetRGBLED(eRGBLEDState.R);
-           
-        }
-
-        private void button16_Click_1(object sender, EventArgs e)
-        {
-            m_Arduino.SetRGBLED(eRGBLEDState.GB);
-            
+            m_Arduino.SetRGBLED(eRGBLEDState.Azure);
         }
 
         private void YellowButton_Click(object sender, EventArgs e)
         {
-            m_Arduino.SetRGBLED(eRGBLEDState.RG);
-            
-
+            m_Arduino.SetRGBLED(eRGBLEDState.Yellow);
         }
 
-        private void TurnOffButton_Click(object sender, EventArgs e)
+        private void TurnOffRGBLedButton_Click(object sender, EventArgs e)
         {
             m_Arduino.SetRGBLED(eRGBLEDState.Off);
-            
         }
 
         private void PinkButton_Click(object sender, EventArgs e)
         {
-            m_Arduino.SetRGBLED(eRGBLEDState.RB);
-            RgbTextBox.Text = "Current Color: Pink";
-
+            m_Arduino.SetRGBLED(eRGBLEDState.Pink);
         }
 
         private void BlueButton_Click(object sender, EventArgs e)
         {
-            m_Arduino.SetRGBLED(eRGBLEDState.B);
-            RgbTextBox.Text = "Current Color: Blue";
+            m_Arduino.SetRGBLED(eRGBLEDState.Blue);
         }
 
         private void WhiteButton_Click(object sender, EventArgs e)
         {
-            m_Arduino.SetRGBLED(eRGBLEDState.RGB);
-            RgbTextBox.Text = "Current Color: White";
+            m_Arduino.SetRGBLED(eRGBLEDState.White);
+        }
+
+        private void GreenButton_Click(object sender, EventArgs e)
+        {
+            m_Arduino.SetRGBLED(eRGBLEDState.Green);
+        }
+        #endregion
+        
+        //Smart Chain:
+        #region Smart Chain
+        private void SmartChainButton_Clicked()
+        {
+            if (ButtonSensorTextBox.InvokeRequired)
+            {
+                ButtonSensorTextBox.Invoke(new ButtonSensorStateChangeDelegate(SmartChainButton_Clicked));
+            }
+            else
+            {
+                ButtonSensorTextBox.BackColor = Color.Yellow;
+                m_SmartChainTimer.Start();
+                m_WhiteCube.ButtonSensorStateChange -= SmartChainButton_Clicked;
+                m_Arduino.SetLED(eLEDState.On);
+                m_WhiteCube.LightSensorStateChange += SmartChainLight_Sensed;
+            }
+        }
+
+        public void SmartChainLight_Sensed(int i_Value)
+        {
+            if (LightSensorTextBox.InvokeRequired)
+            {
+                LightSensorTextBox.Invoke(new LightSensorStateChangeDelegate(SmartChainLight_Sensed), i_Value);
+            }
+            else
+            {
+                LightSensorTextBox.BackColor = Color.Yellow;
+                m_WhiteCube.LightSensorStateChange -= SmartChainLight_Sensed;
+                m_Arduino.SetStepMotor(eStepMotorState.On);
+                m_WhiteCube.ReedSensorStateChange += SmartChainReedMagnet_Sensed;
+            }
+        }
+
+        public void SmartChainReedMagnet_Sensed()
+        {
+            ReedSensorTextBox.BackColor = Color.Yellow;
+            m_WhiteCube.ReedSensorStateChange -= SmartChainReedMagnet_Sensed;
+            m_Arduino.SetStepMotor(eStepMotorState.Off);
+            m_Arduino.SetServoMotor(eServoMotorState.On);
+            m_WhiteCube.DTHSensorStateChange += SmartChainDTH_Sensed;
+        }
+
+        public void SmartChainDTH_Sensed(float i_Temperature, float i_Humidity)
+        {
+            DTHSensorTextBox.BackColor = Color.Yellow;
+            m_WhiteCube.DTHSensorStateChange -= SmartChainDTH_Sensed;
+            if( i_Temperature + i_Humidity > 60 )
+                m_Arduino.SetRGBLED(eRGBLEDState.Yellow);
+            else if( i_Temperature + i_Humidity > 55 )
+                m_Arduino.SetRGBLED(eRGBLEDState.Red);
+            else if( i_Temperature + i_Humidity > 50 )
+                m_Arduino.SetRGBLED(eRGBLEDState.Pink);
+            else if( i_Temperature + i_Humidity > 45 )
+                m_Arduino.SetRGBLED(eRGBLEDState.Green);
+            else if( i_Temperature + i_Humidity > 40 )
+                m_Arduino.SetRGBLED(eRGBLEDState.Azure);
+            else if( i_Temperature + i_Humidity > 35 )
+                m_Arduino.SetRGBLED(eRGBLEDState.Blue);
+            else
+                m_Arduino.SetRGBLED(eRGBLEDState.White);
+        }
+        #endregion
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            //reset all text boxes...
+            //resetActuators();
+            
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public enum eServoMotorState
     {
-        Deg0    = 0,
-        Deg180  = 1
+        Off    = 0,
+        On  = 1
     }
 }

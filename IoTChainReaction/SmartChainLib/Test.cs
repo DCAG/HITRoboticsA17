@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SmartChainLib
 {
+    
     class Test
     {
         static WhiteCube m_WhiteCube;
@@ -19,7 +20,7 @@ namespace SmartChainLib
 
             m_Arduino.SetLED(eLEDState.Off);
             m_Arduino.SetStepMotor(eStepMotorState.Off);
-            m_Arduino.SetServoMotor(eServoMotorState.Deg0);
+            m_Arduino.SetServoMotor(eServoMotorState.Off);
             m_Arduino.SetRGBLED(eRGBLEDState.Off);
 
             //Actuators:
@@ -38,32 +39,14 @@ namespace SmartChainLib
             
         }
 
-        public static void Main()
-        {
-
-            //m_Arduino = new Arduino();
-            //ard.AutoDetectArduinoPort();
-            /*
-            foreach (var i in (new int[] { 1, 2, 3, 4, 5, 6 }))
-            {
-                m_Arduino.WriteLine("AL0");
-                Thread.Sleep(1000);
-                m_Arduino.WriteLine("AL1");
-                Thread.Sleep(1000);
-            }
-            */
-            //Console.ReadLine();
-            
-
-            
-
-
-            while(true)
-            {
-                //
-            }
-        }
-
+        //public static void Main()
+        //{
+        //    while(true)
+        //    {
+        //        //
+        //    }
+        //}
+        #region events
         private static void M_WhiteCube_DTHSensorStateChange(float i_Tempeprature, float i_Humidity)
         {
             Console.WriteLine("Event: Temperature {0}, Humidity {1}", i_Tempeprature, i_Humidity);
@@ -111,6 +94,7 @@ namespace SmartChainLib
             Console.WriteLine("Event: LED {0}", i_State);
             //update GUI
         }
+        #endregion
 
         #region sensors
         public static void Button_Clicked()
@@ -135,7 +119,7 @@ namespace SmartChainLib
 
             m_WhiteCube.ReedSensorStateChange -= ReedMagnet_Sensed;
             m_Arduino.SetStepMotor(eStepMotorState.Off);
-            m_Arduino.SetServoMotor(eServoMotorState.Deg180);
+            m_Arduino.SetServoMotor(eServoMotorState.On);
             m_WhiteCube.DTHSensorStateChange += DTH_Sensed;
         }
 
@@ -144,7 +128,7 @@ namespace SmartChainLib
             Console.WriteLine("SmartChain: DTH Temp={0}, Humid={1}", i_Temperature, i_Humidity);
 
             m_WhiteCube.DTHSensorStateChange -= DTH_Sensed;
-            m_Arduino.SetRGBLED(eRGBLEDState.GB);//value need to depend on both inputs (R - hot and humid, B - cold and dry....)
+            m_Arduino.SetRGBLED(eRGBLEDState.Azure);//value need to depend on both inputs (R - hot and humid, B - cold and dry....)
         }
         #endregion
         
