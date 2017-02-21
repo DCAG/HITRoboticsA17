@@ -88,7 +88,7 @@ namespace SmartChainLib.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("COM4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("COM3")]
         public string ArduinoCOMPort {
             get {
                 return ((string)(this["ArduinoCOMPort"]));
