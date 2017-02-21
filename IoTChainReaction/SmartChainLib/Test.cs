@@ -32,7 +32,7 @@ namespace SmartChainLib
             m_WhiteCube.ButtonSensorStateChange += M_WhiteCube_ButtonSensorStateChange;
             m_WhiteCube.ReedSensorStateChange += M_WhiteCube_ReedSensorStateChange;
             m_WhiteCube.LightSensorStateChange += M_WhiteCube_LightSensorStateChange;
-            m_WhiteCube.DTHSensorStateChange += M_WhiteCube_DHTSensorStateChange;
+            m_WhiteCube.DTHSensorStateChange += M_WhiteCube_DTHSensorStateChange;
 
             m_WhiteCube.ButtonSensorStateChange += Button_Clicked;
             
@@ -64,7 +64,7 @@ namespace SmartChainLib
             }
         }
 
-        private static void M_WhiteCube_DHTSensorStateChange(float i_Tempeprature, float i_Humidity)
+        private static void M_WhiteCube_DTHSensorStateChange(float i_Tempeprature, float i_Humidity)
         {
             Console.WriteLine("Event: Temperature {0}, Humidity {1}", i_Tempeprature, i_Humidity);
             //update GUI
