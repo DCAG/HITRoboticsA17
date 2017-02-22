@@ -49,20 +49,20 @@ namespace SmartChainLib
                 m_ArduinoConnection = new SerialPort(m_Port);
                 m_ArduinoConnection.DataReceived += M_ArduinoConnection_DataReceived;
             }
-            if(!m_ArduinoConnection.IsOpen)
+            if (!m_ArduinoConnection.IsOpen)
             {
                 m_ArduinoConnection.Open();
             }
-            m_ArduinoConnection.WriteLine(message+"\n");
+            m_ArduinoConnection.WriteLine(message + "\n");
         }
 
         private void M_ArduinoConnection_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string data = m_ArduinoConnection.ReadLine();
-            
+
             Regex regex = new Regex(@"^A(?<actuator>L|S|M|R)(?<state>\d)");
             Match result = regex.Match(data);
-            if(result.Success)
+            if (result.Success)
             {
                 string actuator = result.Groups["actuator"].Value;
                 int state = int.Parse(result.Groups["state"].Value);
@@ -71,15 +71,15 @@ namespace SmartChainLib
                 {
                     OnLEDStateChange((eLEDState)state);
                 }
-                else if(actuator == "S")
+                else if (actuator == "S")
                 {
                     OnServoMotorStateChange((eServoMotorState)state);
                 }
-                else if(actuator == "M")
+                else if (actuator == "M")
                 {
                     OnStepMotorStateChange((eStepMotorState)state);
                 }
-                else if(actuator == "R")
+                else if (actuator == "R")
                 {
                     OnRGBLEDStateChange((eRGBLEDState)state);
                 }
@@ -87,6 +87,22 @@ namespace SmartChainLib
         }
 
         #region Autodetect Arduino connection
+        public static string GetArduinoComPort()
+        {
+            string arduinoDeviceQuery = "SELECT * FROM Win32_SerialPort WHERE Name LIKE '%Arduino%'";
+
+            // Define the query for volumes
+            ObjectQuery query = new ObjectQuery(arduinoDeviceQuery);
+            // create the search for volumes
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+            // Get the volumes
+            ManagementObjectCollection serialCOMDevices = searcher.Get();
+
+            ManagementObject arduinoMgmtObject = serialCOMDevices.Cast<ManagementObject>().ToList().FirstOrDefault() ?? null;
+            if(arduinoMgmtObject)
+            return arduinoMgmtObject;
+        }
+
         public void AutoDetectArduinoPort()
         {
             //OnDeviceArrival += OnArduinoArrival;
