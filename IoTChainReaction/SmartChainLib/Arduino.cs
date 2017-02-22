@@ -87,21 +87,21 @@ namespace SmartChainLib
         }
 
         #region Autodetect Arduino connection
-        public static string GetArduinoComPort()
-        {
-            string arduinoDeviceQuery = "SELECT * FROM Win32_SerialPort WHERE Name LIKE '%Arduino%'";
-
-            // Define the query for volumes
-            ObjectQuery query = new ObjectQuery(arduinoDeviceQuery);
-            // create the search for volumes
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-            // Get the volumes
-            ManagementObjectCollection serialCOMDevices = searcher.Get();
-
-            ManagementObject arduinoMgmtObject = serialCOMDevices.Cast<ManagementObject>().ToList().FirstOrDefault() ?? null;
-            if(arduinoMgmtObject)
-            return arduinoMgmtObject;
-        }
+        //public static string GetArduinoComPort()
+        //{
+        //    string arduinoDeviceQuery = "SELECT * FROM Win32_SerialPort WHERE Name LIKE '%Arduino%'";
+        //
+        //    // Define the query for volumes
+        //    ObjectQuery query = new ObjectQuery(arduinoDeviceQuery);
+        //    // create the search for volumes
+        //    ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+        //    // Get the volumes
+        //    ManagementObjectCollection serialCOMDevices = searcher.Get();
+        //
+        //    ManagementObject arduinoMgmtObject = serialCOMDevices.Cast<ManagementObject>().ToList().FirstOrDefault() ?? null;
+        //    if(arduinoMgmtObject)
+        //    return arduinoMgmtObject;
+        //}
 
         public void AutoDetectArduinoPort()
         {

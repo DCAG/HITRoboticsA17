@@ -77,20 +77,39 @@ namespace SmartChainLib
             return Guid.NewGuid().ToString().Split('-')[4].Substring(0, 10);
         }
 
+
         private void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             try
             {
-                dynamic messageJson = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(e.Message)); //("{ \"device_name\":\"3PI_1206876\", \"type\":\"button\" }");
+                dynamic messageJson = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(e.Message));
+                /*
+                 * Ignore EXISTENCE notification messages like this one
+                    {
+                        "device_name" : "3PI_1206876",
+                        "type" : "button",
+                        "ipaddress" : "192.168.8.246",
+                        "bgn" : 3,
+                        "uptime" : 21,
+                        "sdk" : "1.4.0",
+                        "version" : "0.2.1"
+                    }
+                *
+                *  Accept EVENT messsages like this one:
+                    {
+                        "device_name" : "3PI_1206876",
+                        "type" : "button"
+                    }
+                */
                 if (messageJson.ipaddress != null)
-                    return; // { "device_name":"3PI_1206876", "type":"button", "ipaddress":"192.168.8.246", "bgn":3, "uptime":21, "sdk":"1.4.0", "version":"0.2.1" }
+                    return; 
                 if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
                 {
                     OnButtonSensorStateChange();
                 }
                 else if ((string)messageJson.type == eWhiteCubeSensor.light.ToString())
                 {
-                    OnLightSensorStateChange((int)messageJson.value); //{ "device_name":"3PI_1152554", "type":"light", "value":"185" }
+                    OnLightSensorStateChange((int)messageJson.value); 
                 }
                 else if ((string)messageJson.type == eWhiteCubeSensor.reed.ToString())
                 {
@@ -98,12 +117,12 @@ namespace SmartChainLib
                 }
                 else if ((string)messageJson.type == eWhiteCubeSensor.dth.ToString())
                 {
-                    OnDTHSensorStateChange((float)messageJson.temperature, (float)messageJson.humidity); //{ "device_name":"3PI_13775673", "type":"dth", "temperature":"20.0", "humidity":"20.0" }
+                    OnDTHSensorStateChange((float)messageJson.temperature, (float)messageJson.humidity); 
                 }
             }
-            catch(Exception ex)
+            catch
             {
-                //Console.WriteLine(ex.Message);//Encoding.UTF8.GetString(e.Message));//alert of wrong incoming message - where to?
+                //convertion failed? format is not json? - do nothing
             }
         }
 
