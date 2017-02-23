@@ -87,21 +87,27 @@ namespace SmartChainLib
         }
 
         #region Autodetect Arduino connection
-        //public static string GetArduinoComPort()
-        //{
-        //    string arduinoDeviceQuery = "SELECT * FROM Win32_SerialPort WHERE Name LIKE '%Arduino%'";
-        //
-        //    // Define the query for volumes
-        //    ObjectQuery query = new ObjectQuery(arduinoDeviceQuery);
-        //    // create the search for volumes
-        //    ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-        //    // Get the volumes
-        //    ManagementObjectCollection serialCOMDevices = searcher.Get();
-        //
-        //    ManagementObject arduinoMgmtObject = serialCOMDevices.Cast<ManagementObject>().ToList().FirstOrDefault() ?? null;
-        //    if(arduinoMgmtObject)
-        //    return arduinoMgmtObject;
-        //}
+        public static string GetArduinoComPort()
+        {
+            string arduinoDeviceQuery = "SELECT * FROM Win32_SerialPort WHERE Name LIKE '%Arduino%'";
+            
+            ObjectQuery query = new ObjectQuery(arduinoDeviceQuery); 
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+            ManagementObjectCollection serialCOMDevices = searcher.Get();
+            ManagementObject arduinoMgmtObject = serialCOMDevices.Cast<ManagementObject>().ToList().FirstOrDefault() ?? null;
+
+            string result;
+            if (arduinoMgmtObject == null)
+            {
+                result = string.Empty;
+            }
+            else
+            {
+                result = arduinoMgmtObject["Port"].ToString();
+            }
+
+            return result;
+        }
 
         public void AutoDetectArduinoPort()
         {
@@ -112,20 +118,20 @@ namespace SmartChainLib
 
         private void subscribeToWMIInstances()
         {
-            string serialDeviceQuery = "SELECT * FROM {0} WITHIN 2 WHERE TargetInstance ISA 'Win32_SerialPort' AND TargetInstance.PNPDeviceID LIKE '%VID_{1}&PID_{2}%'";
+            string serialDeviceQuery = "SELECT * FROM {0} WITHIN 2 WHERE TargetInstance ISA 'Win32_SerialPort' AND TargetInstance.Name LIKE '%Arduino%'";
 
-            string deviceArrivalQuery = string.Format(serialDeviceQuery, "__InstanceCreationEvent", m_VID, m_PID);
+            string deviceArrivalQuery = string.Format(serialDeviceQuery, "__InstanceCreationEvent");
             ManagementEventWatcher arrivalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceArrivalQuery));
-            arrivalWatcher.EventArrived += OnArduinoArrival; //OnDeviceArrival;
+            arrivalWatcher.EventArrived += OnArrival; //OnDeviceArrival;
             arrivalWatcher.Start();
 
-            string deviceRemovalQuery = string.Format(serialDeviceQuery, "__InstanceDeletionEvent", m_VID, m_PID);
+            string deviceRemovalQuery = string.Format(serialDeviceQuery, "__InstanceDeletionEvent");
             ManagementEventWatcher removalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceRemovalQuery));
-            removalWatcher.EventArrived += OnArduinoRemoval;  //OnDeviceRemoval;
+            removalWatcher.EventArrived += OnRemoval;  //OnDeviceRemoval;
             removalWatcher.Start();
         }
 
-        private void OnArduinoArrival(object sender, EventArrivedEventArgs e)
+        private void OnArrival(object sender, EventArrivedEventArgs e)
         {
             ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
             m_Port = (string)instance["COMPort"];
@@ -140,7 +146,7 @@ namespace SmartChainLib
             WriteLine("9Hello");
         }
 
-        private void OnArduinoRemoval(object sender, EventArrivedEventArgs e)
+        private void OnRemoval(object sender, EventArrivedEventArgs e)
         {
             Console.WriteLine("Arrival m_Port =  {0}", m_Port);
             m_Port = string.Empty;
