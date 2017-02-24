@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartChainLib
 {
-    public delegate void ButtonSensorStateChangeDelegate();
-    public delegate void LightSensorStateChangeDelegate(int i_Value);
-    public delegate void ReedSensorStateChangeDelegate();
-    public delegate void DTHSensorStateChangeDelegate(float i_Tempeprature, float i_Humidity);
+
     public interface IWhiteCube
     {
         void RequestSensorStatus(eWhiteCubeSensor i_Sensor);

@@ -78,9 +78,9 @@
             this.ActuatorsGroupBox.Controls.Add(this.LedButton);
             this.ActuatorsGroupBox.Controls.Add(this.ServoMotorButton);
             this.ActuatorsGroupBox.Location = new System.Drawing.Point(406, 84);
-            this.ActuatorsGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ActuatorsGroupBox.Margin = new System.Windows.Forms.Padding(2);
             this.ActuatorsGroupBox.Name = "ActuatorsGroupBox";
-            this.ActuatorsGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ActuatorsGroupBox.Padding = new System.Windows.Forms.Padding(2);
             this.ActuatorsGroupBox.Size = new System.Drawing.Size(395, 396);
             this.ActuatorsGroupBox.TabIndex = 1;
             this.ActuatorsGroupBox.TabStop = false;
@@ -90,7 +90,7 @@
             // 
             this.StepMotorTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
             this.StepMotorTextBox.Location = new System.Drawing.Point(266, 347);
-            this.StepMotorTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.StepMotorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.StepMotorTextBox.Name = "StepMotorTextBox";
             this.StepMotorTextBox.ReadOnly = true;
             this.StepMotorTextBox.Size = new System.Drawing.Size(76, 20);
@@ -111,9 +111,9 @@
             this.RGBLedGroupBox.Controls.Add(this.AzureButton);
             this.RGBLedGroupBox.Controls.Add(this.RedrButton);
             this.RGBLedGroupBox.Location = new System.Drawing.Point(17, 210);
-            this.RGBLedGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.RGBLedGroupBox.Margin = new System.Windows.Forms.Padding(2);
             this.RGBLedGroupBox.Name = "RGBLedGroupBox";
-            this.RGBLedGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.RGBLedGroupBox.Padding = new System.Windows.Forms.Padding(2);
             this.RGBLedGroupBox.Size = new System.Drawing.Size(188, 156);
             this.RGBLedGroupBox.TabIndex = 6;
             this.RGBLedGroupBox.TabStop = false;
@@ -123,7 +123,7 @@
             // 
             this.WhiteButton.BackColor = System.Drawing.Color.White;
             this.WhiteButton.Location = new System.Drawing.Point(71, 78);
-            this.WhiteButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.WhiteButton.Margin = new System.Windows.Forms.Padding(2);
             this.WhiteButton.Name = "WhiteButton";
             this.WhiteButton.Size = new System.Drawing.Size(44, 19);
             this.WhiteButton.TabIndex = 7;
@@ -134,7 +134,7 @@
             // RgbTextBox
             // 
             this.RgbTextBox.Location = new System.Drawing.Point(58, 137);
-            this.RgbTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.RgbTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.RgbTextBox.Name = "RgbTextBox";
             this.RgbTextBox.ReadOnly = true;
             this.RgbTextBox.Size = new System.Drawing.Size(76, 20);
@@ -145,7 +145,7 @@
             // 
             this.YellowButton.BackColor = System.Drawing.Color.Yellow;
             this.YellowButton.Location = new System.Drawing.Point(35, 62);
-            this.YellowButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.YellowButton.Margin = new System.Windows.Forms.Padding(2);
             this.YellowButton.Name = "YellowButton";
             this.YellowButton.Size = new System.Drawing.Size(42, 19);
             this.YellowButton.TabIndex = 6;
@@ -157,7 +157,7 @@
             // 
             this.TurnOffButton.BackColor = System.Drawing.Color.LightGray;
             this.TurnOffButton.Location = new System.Drawing.Point(4, 24);
-            this.TurnOffButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.TurnOffButton.Margin = new System.Windows.Forms.Padding(2);
             this.TurnOffButton.Name = "TurnOffButton";
             this.TurnOffButton.Size = new System.Drawing.Size(40, 19);
             this.TurnOffButton.TabIndex = 5;
@@ -169,7 +169,7 @@
             // 
             this.GreenButton.BackColor = System.Drawing.Color.Lime;
             this.GreenButton.Location = new System.Drawing.Point(8, 101);
-            this.GreenButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.GreenButton.Margin = new System.Windows.Forms.Padding(2);
             this.GreenButton.Name = "GreenButton";
             this.GreenButton.Size = new System.Drawing.Size(56, 19);
             this.GreenButton.TabIndex = 4;
@@ -181,7 +181,7 @@
             // 
             this.PinkButton.BackColor = System.Drawing.Color.Fuchsia;
             this.PinkButton.Location = new System.Drawing.Point(110, 55);
-            this.PinkButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.PinkButton.Margin = new System.Windows.Forms.Padding(2);
             this.PinkButton.Name = "PinkButton";
             this.PinkButton.Size = new System.Drawing.Size(32, 25);
             this.PinkButton.TabIndex = 3;
@@ -193,7 +193,7 @@
             // 
             this.BlueButton.BackColor = System.Drawing.Color.Blue;
             this.BlueButton.Location = new System.Drawing.Point(124, 98);
-            this.BlueButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.BlueButton.Margin = new System.Windows.Forms.Padding(2);
             this.BlueButton.Name = "BlueButton";
             this.BlueButton.Size = new System.Drawing.Size(36, 26);
             this.BlueButton.TabIndex = 2;
@@ -205,7 +205,7 @@
             // 
             this.AzureButton.BackColor = System.Drawing.Color.Aqua;
             this.AzureButton.Location = new System.Drawing.Point(71, 105);
-            this.AzureButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.AzureButton.Margin = new System.Windows.Forms.Padding(2);
             this.AzureButton.Name = "AzureButton";
             this.AzureButton.Size = new System.Drawing.Size(45, 32);
             this.AzureButton.TabIndex = 1;
@@ -217,7 +217,7 @@
             // 
             this.RedrButton.BackColor = System.Drawing.Color.Red;
             this.RedrButton.Location = new System.Drawing.Point(58, 17);
-            this.RedrButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.RedrButton.Margin = new System.Windows.Forms.Padding(2);
             this.RedrButton.Name = "RedrButton";
             this.RedrButton.Size = new System.Drawing.Size(54, 19);
             this.RedrButton.TabIndex = 0;
@@ -229,7 +229,7 @@
             // 
             this.LEDTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
             this.LEDTextBox.Location = new System.Drawing.Point(266, 168);
-            this.LEDTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.LEDTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.LEDTextBox.Name = "LEDTextBox";
             this.LEDTextBox.ReadOnly = true;
             this.LEDTextBox.Size = new System.Drawing.Size(76, 20);
@@ -239,7 +239,7 @@
             // ServoMotorTextBox
             // 
             this.ServoMotorTextBox.Location = new System.Drawing.Point(76, 168);
-            this.ServoMotorTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ServoMotorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.ServoMotorTextBox.Name = "ServoMotorTextBox";
             this.ServoMotorTextBox.ReadOnly = true;
             this.ServoMotorTextBox.Size = new System.Drawing.Size(76, 20);
@@ -250,7 +250,7 @@
             this.StepMotorButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("StepMotorButton.BackgroundImage")));
             this.StepMotorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.StepMotorButton.Location = new System.Drawing.Point(239, 210);
-            this.StepMotorButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.StepMotorButton.Margin = new System.Windows.Forms.Padding(2);
             this.StepMotorButton.Name = "StepMotorButton";
             this.StepMotorButton.Size = new System.Drawing.Size(126, 155);
             this.StepMotorButton.TabIndex = 3;
@@ -263,7 +263,7 @@
             // 
             this.LedButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.LedButton.Location = new System.Drawing.Point(239, 31);
-            this.LedButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.LedButton.Margin = new System.Windows.Forms.Padding(2);
             this.LedButton.Name = "LedButton";
             this.LedButton.Size = new System.Drawing.Size(126, 156);
             this.LedButton.TabIndex = 4;
@@ -278,7 +278,7 @@
             this.ServoMotorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
             this.ServoMotorButton.ForeColor = System.Drawing.SystemColors.HighlightText;
             this.ServoMotorButton.Location = new System.Drawing.Point(22, 31);
-            this.ServoMotorButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ServoMotorButton.Margin = new System.Windows.Forms.Padding(2);
             this.ServoMotorButton.Name = "ServoMotorButton";
             this.ServoMotorButton.Size = new System.Drawing.Size(183, 156);
             this.ServoMotorButton.TabIndex = 0;
@@ -298,9 +298,9 @@
             this.groupBox1.Controls.Add(this.lightSensorButton);
             this.groupBox1.ForeColor = System.Drawing.SystemColors.Desktop;
             this.groupBox1.Location = new System.Drawing.Point(15, 84);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(346, 396);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
@@ -309,7 +309,7 @@
             // ReedSensorTextBox
             // 
             this.ReedSensorTextBox.Location = new System.Drawing.Point(215, 332);
-            this.ReedSensorTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ReedSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.ReedSensorTextBox.Multiline = true;
             this.ReedSensorTextBox.Name = "ReedSensorTextBox";
             this.ReedSensorTextBox.ReadOnly = true;
@@ -320,7 +320,7 @@
             // ButtonSensorTextBox
             // 
             this.ButtonSensorTextBox.Location = new System.Drawing.Point(52, 333);
-            this.ButtonSensorTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ButtonSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.ButtonSensorTextBox.Multiline = true;
             this.ButtonSensorTextBox.Name = "ButtonSensorTextBox";
             this.ButtonSensorTextBox.ReadOnly = true;
@@ -331,7 +331,7 @@
             // DTHSensorTextBox
             // 
             this.DTHSensorTextBox.Location = new System.Drawing.Point(215, 152);
-            this.DTHSensorTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.DTHSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.DTHSensorTextBox.Multiline = true;
             this.DTHSensorTextBox.Name = "DTHSensorTextBox";
             this.DTHSensorTextBox.ReadOnly = true;
@@ -342,7 +342,7 @@
             // LightSensorTextBox
             // 
             this.LightSensorTextBox.Location = new System.Drawing.Point(52, 152);
-            this.LightSensorTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.LightSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.LightSensorTextBox.Multiline = true;
             this.LightSensorTextBox.Name = "LightSensorTextBox";
             this.LightSensorTextBox.ReadOnly = true;
@@ -355,7 +355,7 @@
             this.reedSensorButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("reedSensorButton.BackgroundImage")));
             this.reedSensorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.reedSensorButton.Location = new System.Drawing.Point(188, 210);
-            this.reedSensorButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.reedSensorButton.Margin = new System.Windows.Forms.Padding(2);
             this.reedSensorButton.Name = "reedSensorButton";
             this.reedSensorButton.Size = new System.Drawing.Size(128, 156);
             this.reedSensorButton.TabIndex = 3;
@@ -368,7 +368,7 @@
             this.buttonSensorButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonSensorButton.BackgroundImage")));
             this.buttonSensorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.buttonSensorButton.Location = new System.Drawing.Point(26, 210);
-            this.buttonSensorButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.buttonSensorButton.Margin = new System.Windows.Forms.Padding(2);
             this.buttonSensorButton.Name = "buttonSensorButton";
             this.buttonSensorButton.Size = new System.Drawing.Size(128, 156);
             this.buttonSensorButton.TabIndex = 2;
@@ -382,7 +382,7 @@
             this.DTHSensorButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("DTHSensorButton.BackgroundImage")));
             this.DTHSensorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.DTHSensorButton.Location = new System.Drawing.Point(188, 30);
-            this.DTHSensorButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.DTHSensorButton.Margin = new System.Windows.Forms.Padding(2);
             this.DTHSensorButton.Name = "DTHSensorButton";
             this.DTHSensorButton.Size = new System.Drawing.Size(128, 156);
             this.DTHSensorButton.TabIndex = 1;
@@ -396,7 +396,7 @@
             this.lightSensorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.lightSensorButton.ForeColor = System.Drawing.SystemColors.InfoText;
             this.lightSensorButton.Location = new System.Drawing.Point(26, 30);
-            this.lightSensorButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lightSensorButton.Margin = new System.Windows.Forms.Padding(2);
             this.lightSensorButton.Name = "lightSensorButton";
             this.lightSensorButton.Size = new System.Drawing.Size(128, 156);
             this.lightSensorButton.TabIndex = 0;
@@ -407,7 +407,7 @@
             // startSmartChainButton
             // 
             this.startSmartChainButton.Location = new System.Drawing.Point(406, 10);
-            this.startSmartChainButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.startSmartChainButton.Margin = new System.Windows.Forms.Padding(2);
             this.startSmartChainButton.Name = "startSmartChainButton";
             this.startSmartChainButton.Size = new System.Drawing.Size(105, 62);
             this.startSmartChainButton.TabIndex = 3;
@@ -441,30 +441,30 @@
             // 
             this.whiteCubeConnectionStateLabel.AutoSize = true;
             this.whiteCubeConnectionStateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
-            this.whiteCubeConnectionStateLabel.ForeColor = System.Drawing.Color.ForestGreen;
+            this.whiteCubeConnectionStateLabel.ForeColor = System.Drawing.Color.Red;
             this.whiteCubeConnectionStateLabel.Location = new System.Drawing.Point(176, 41);
             this.whiteCubeConnectionStateLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.whiteCubeConnectionStateLabel.Name = "whiteCubeConnectionStateLabel";
-            this.whiteCubeConnectionStateLabel.Size = new System.Drawing.Size(117, 26);
+            this.whiteCubeConnectionStateLabel.Size = new System.Drawing.Size(144, 26);
             this.whiteCubeConnectionStateLabel.TabIndex = 7;
-            this.whiteCubeConnectionStateLabel.Text = "Connected";
+            this.whiteCubeConnectionStateLabel.Text = "Disconnected";
             // 
             // arduinoConnectionStateLabel
             // 
             this.arduinoConnectionStateLabel.AutoSize = true;
             this.arduinoConnectionStateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
-            this.arduinoConnectionStateLabel.ForeColor = System.Drawing.Color.ForestGreen;
+            this.arduinoConnectionStateLabel.ForeColor = System.Drawing.Color.Red;
             this.arduinoConnectionStateLabel.Location = new System.Drawing.Point(176, 7);
             this.arduinoConnectionStateLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.arduinoConnectionStateLabel.Name = "arduinoConnectionStateLabel";
-            this.arduinoConnectionStateLabel.Size = new System.Drawing.Size(117, 26);
+            this.arduinoConnectionStateLabel.Size = new System.Drawing.Size(105, 26);
             this.arduinoConnectionStateLabel.TabIndex = 6;
-            this.arduinoConnectionStateLabel.Text = "Connected";
+            this.arduinoConnectionStateLabel.Text = "Detached";
             // 
             // resetButton
             // 
             this.resetButton.Location = new System.Drawing.Point(697, 10);
-            this.resetButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.resetButton.Margin = new System.Windows.Forms.Padding(2);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(105, 62);
             this.resetButton.TabIndex = 8;
@@ -510,10 +510,11 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.ActuatorsGroupBox);
             this.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "IOTPanel";
             this.Text = "IOT Panel";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IOTPanel_FormClosing);
+            this.Load += new System.EventHandler(this.IOTPanel_Load);
             this.ActuatorsGroupBox.ResumeLayout(false);
             this.ActuatorsGroupBox.PerformLayout();
             this.RGBLedGroupBox.ResumeLayout(false);

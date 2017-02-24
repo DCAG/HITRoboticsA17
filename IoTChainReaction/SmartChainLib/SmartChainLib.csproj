@@ -37,13 +37,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ChainReactionList.xlsx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="WmiEventTest.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="M2Mqtt.Net, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -64,6 +62,8 @@
     <Compile Include="Actuators\eRGBLEDState.cs" />
     <Compile Include="Actuators\eServoMotorState.cs" />
     <Compile Include="Actuators\eStepMotorState.cs" />
+    <Compile Include="eArduinoConnectionStatus.cs" />
+    <Compile Include="eWhiteCubeConnectionStatus.cs" />
     <Compile Include="eWhiteCubeSensor.cs" />
     <Compile Include="IArduino.cs" />
     <Compile Include="IWhiteCube.cs" />

@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace SmartChainLib
 {
+    public delegate void ArduinoConnectionStatusChangeDelegate(eArduinoConnectionStatus i_Status);
+    public delegate void LEDStateChangeDelegate(eLEDState i_State);
+    public delegate void ServoMotorStateChangeDelegate(eServoMotorState i_State);
+    public delegate void StepMotorStateChangeDelegate(eStepMotorState i_State);
+    public delegate void RGBLEDStateChangeDelegate(eRGBLEDState i_State);
+
     public class Arduino : IArduino
     {
         SerialPort m_ArduinoConnection;
@@ -23,35 +29,70 @@ namespace SmartChainLib
         }
 
         private string m_Port;
-        //private string m_VID;
-        //private string m_PID;
+        private string m_PNPDeviceName;
         
-        //public event EventArrivedEventHandler ArduinoConnectionStatusChange;
-
+        public event ArduinoConnectionStatusChangeDelegate ArduinoConnectionStatusChange;
         public event LEDStateChangeDelegate LEDStateChange;
         public event ServoMotorStateChangeDelegate ServoMotorStateChange;
         public event StepMotorStateChangeDelegate StepMotorStateChange;
         public event RGBLEDStateChangeDelegate RGBLEDStateChange;
 
+        private ManagementEventWatcher m_ArrivalWatcher;
+        private ManagementEventWatcher m_RemovalWatcher;
+
         public Arduino()
         {
-            m_IsConnectedToComputer = false;
-            //m_VID = Properties.Settings.Default.ArduinoPID;
-            //m_PID = Properties.Settings.Default.ArduinoVID;
-            m_Port = Properties.Settings.Default.ArduinoCOMPort;
+            m_PNPDeviceName = Properties.Settings.Default.ArduinoPNPDeviceName;
+            m_Port = GetArduinoComPort(m_PNPDeviceName);
+            m_IsConnectedToComputer = m_Port != string.Empty;
+            OnArduinoConnectionStatusChange(m_IsConnectedToComputer ? eArduinoConnectionStatus.Attached : eArduinoConnectionStatus.Detached);
+            m_ArduinoConnection = new SerialPort();
+            m_ArduinoConnection.DataReceived += M_ArduinoConnection_DataReceived;
+
+            string serialDeviceQuery = "SELECT * FROM {0} WITHIN 2 WHERE TargetInstance ISA 'Win32_SerialPort' AND TargetInstance.Name LIKE '%{1}%'";
+            string deviceArrivalQuery = string.Format(serialDeviceQuery, "__InstanceCreationEvent", m_PNPDeviceName);
+            m_ArrivalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceArrivalQuery));
+            m_ArrivalWatcher.EventArrived += OnArrival;
+            string deviceRemovalQuery = string.Format(serialDeviceQuery, "__InstanceDeletionEvent", m_PNPDeviceName);
+            m_RemovalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceRemovalQuery));
+            m_RemovalWatcher.EventArrived += OnRemoval;
+        }
+
+        public void OpenConnection()
+        {
+            m_ArduinoConnection.PortName = m_Port;
+            if (!m_ArduinoConnection.IsOpen)
+            {
+                try
+                {
+                    m_ArduinoConnection.Open();
+                    OnArduinoConnectionStatusChange(eArduinoConnectionStatus.Connected);
+                }
+                catch
+                {
+                    // write to log (debug?)
+                }
+            }
+        }
+
+        public void CloseConnection()
+        {
+            if (m_ArduinoConnection.IsOpen)
+            {
+                try
+                {
+                    m_ArduinoConnection.Close();
+                    OnArduinoConnectionStatusChange(eArduinoConnectionStatus.Attached);
+                }
+                catch
+                {
+                    // write to log (debug?)
+                }
+            }
         }
 
         public void WriteLine(string message)
         {
-            if (m_ArduinoConnection == null)
-            {
-                m_ArduinoConnection = new SerialPort(m_Port);
-                m_ArduinoConnection.DataReceived += M_ArduinoConnection_DataReceived;
-            }
-            if (!m_ArduinoConnection.IsOpen)
-            {
-                m_ArduinoConnection.Open();
-            }
             m_ArduinoConnection.WriteLine(message + "\n");
         }
 
@@ -86,9 +127,17 @@ namespace SmartChainLib
         }
 
         #region Autodetect Arduino connection
-        public static string GetArduinoComPort()
+        private void OnArduinoConnectionStatusChange(eArduinoConnectionStatus i_Status)
         {
-            string arduinoDeviceQuery = "SELECT * FROM Win32_SerialPort WHERE Name LIKE '%Arduino%'";
+            if(ArduinoConnectionStatusChange != null)
+            {
+                ArduinoConnectionStatusChange.Invoke(i_Status);
+            }
+        }
+
+        public static string GetArduinoComPort(string i_DeviceName)
+        {
+            string arduinoDeviceQuery = string.Format("SELECT * FROM Win32_SerialPort WHERE Name LIKE '%{0}%'", i_DeviceName);
             
             ObjectQuery query = new ObjectQuery(arduinoDeviceQuery); 
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
@@ -102,51 +151,32 @@ namespace SmartChainLib
             }
             else
             {
-                result = arduinoMgmtObject["Port"].ToString();
+                result = arduinoMgmtObject["DeviceID"].ToString();
             }
 
             return result;
         }
 
-        private void subscribeToWMIInstances()
+        public void StartSubscribingToDeviceAttachAutoConnectAndDetachAutoClose()
         {
-            string serialDeviceQuery = "SELECT * FROM {0} WITHIN 2 WHERE TargetInstance ISA 'Win32_SerialPort' AND TargetInstance.Name LIKE '%Arduino%'";
-
-            string deviceArrivalQuery = string.Format(serialDeviceQuery, "__InstanceCreationEvent");
-            ManagementEventWatcher arrivalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceArrivalQuery));
-            arrivalWatcher.EventArrived += OnArrival;
-            arrivalWatcher.Start();
-
-            string deviceRemovalQuery = string.Format(serialDeviceQuery, "__InstanceDeletionEvent");
-            ManagementEventWatcher removalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceRemovalQuery));
-            removalWatcher.EventArrived += OnRemoval;
-            removalWatcher.Start();
+            m_ArrivalWatcher.Start();
+            m_RemovalWatcher.Start();
         }
 
-        public void OpenConnection(string i_Port)
+        public void StopSubscribingToDeviceAttachAutoConnectAndDetachAutoClose()
         {
-            m_ArduinoConnection = new SerialPort(m_Port);
-            m_ArduinoConnection.DataReceived += M_ArduinoConnection_DataReceived;
-            if (!m_ArduinoConnection.IsOpen)
-            {
-                m_ArduinoConnection.Open();
-            }
-        }
-
-        public void CloseConnection()
-        {
-            if (m_ArduinoConnection.IsOpen)
-            {
-                m_ArduinoConnection.Close();
-            }
+            m_ArrivalWatcher.Stop();
+            m_RemovalWatcher.Stop();
         }
 
         private void OnArrival(object sender, EventArrivedEventArgs e)
         {
             ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
-            m_Port = (string)instance["COMPort"];
+            m_Port = (string)instance["DeviceID"];
 
-            OpenConnection(m_Port);
+            m_IsConnectedToComputer = true;
+            OnArduinoConnectionStatusChange(eArduinoConnectionStatus.Attached);
+            OpenConnection();
         }
 
         private void OnRemoval(object sender, EventArrivedEventArgs e)
@@ -154,7 +184,9 @@ namespace SmartChainLib
             Console.WriteLine("Arrival m_Port =  {0}", m_Port);
             m_Port = string.Empty;
 
+            m_IsConnectedToComputer = false;
             CloseConnection();
+            OnArduinoConnectionStatusChange(eArduinoConnectionStatus.Detached);
         }
         #endregion
 

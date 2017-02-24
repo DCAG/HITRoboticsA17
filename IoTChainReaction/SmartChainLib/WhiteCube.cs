@@ -10,6 +10,12 @@ using Microsoft.CSharp;
 
 namespace SmartChainLib
 {
+    public delegate void WhiteCubeConnectionStatusChangeDelegate(eWhiteCubeConnectionStatus i_Status);
+    public delegate void ButtonSensorStateChangeDelegate();
+    public delegate void LightSensorStateChangeDelegate(int i_Value);
+    public delegate void ReedSensorStateChangeDelegate();
+    public delegate void DTHSensorStateChangeDelegate(float i_Tempeprature, float i_Humidity);
+
     public class WhiteCube : IWhiteCube
     {
         private string m_HostName;
@@ -20,6 +26,7 @@ namespace SmartChainLib
 
         MqttClient m_WhiteCubeClient;
 
+        public event WhiteCubeConnectionStatusChangeDelegate WhiteCubeConnectionStatusChange;
         public event ButtonSensorStateChangeDelegate ButtonSensorStateChange;
         public event LightSensorStateChangeDelegate LightSensorStateChange;
         public event ReedSensorStateChangeDelegate ReedSensorStateChange;
@@ -32,25 +39,47 @@ namespace SmartChainLib
             m_UserName = Properties.Settings.Default.MQTTUserName;
             m_Password = Properties.Settings.Default.MQTTPassword;
             m_KeepAlivePeriod = Properties.Settings.Default.KeepAlivePeriod;
-            Connect();
-        }
 
-
-        private void Connect()
-        {
-            const bool v_CleanSession = true;
             const bool v_Secure = true;
             m_WhiteCubeClient = new MqttClient(m_HostName, m_Port, !v_Secure, null, null, MqttSslProtocols.None, null);
 
+            const byte qosLevel = 0;
             string allMessages = string.Format("{0}/#", m_UserName.ToLower());
-            byte qosLevel = 0;
-
             m_WhiteCubeClient.Subscribe(new string[] { allMessages }, new byte[] { qosLevel });
-            m_WhiteCubeClient.MqttMsgSubscribed += Client_MqttMsgSubscribed;
             m_WhiteCubeClient.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;
 
-            byte ConnResult = m_WhiteCubeClient.Connect(GenerateSessionID(), m_UserName, m_Password, v_CleanSession, m_KeepAlivePeriod);
+            m_WhiteCubeClient.ConnectionClosed += M_WhiteCubeClient_ConnectionClosed;
+        }
 
+        private void M_WhiteCubeClient_ConnectionClosed(object sender, EventArgs e)
+        {
+            OnWhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus.Disconnected);
+        }
+
+        private void OnWhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus i_Status)
+        {
+            if(WhiteCubeConnectionStatusChange != null)
+            {
+                WhiteCubeConnectionStatusChange.Invoke(i_Status);
+            }
+        }
+
+        public void Connect()
+        {
+            const bool v_CleanSession = true;
+
+            if (!m_WhiteCubeClient.IsConnected)
+            {
+                try
+                {
+                    m_WhiteCubeClient.Connect(GenerateSessionID(), m_UserName, m_Password, v_CleanSession, m_KeepAlivePeriod);
+                    OnWhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus.Connected);
+                }
+                catch
+                {
+                    // log or report...
+                }
+            }
             /*
             Subscriptions:
             "matzi/#"
@@ -69,7 +98,14 @@ namespace SmartChainLib
                 onrelease:
                 { "device_name":"3PI_1206876", "type":"button" } X 2 (click and release)
              */
+        }
 
+        public void Disconnect()
+        {
+            if(m_WhiteCubeClient.IsConnected)
+            {
+                m_WhiteCubeClient.Disconnect();
+            }
         }
 
         private string GenerateSessionID()
@@ -122,13 +158,8 @@ namespace SmartChainLib
             }
             catch
             {
-                //convertion failed? format is not json? - do nothing
+                // write to log (debug?) - maybe convertion failed or format is not json
             }
-        }
-
-        private void Client_MqttMsgSubscribed(object sender, MqttMsgSubscribedEventArgs e)
-        {
-            //Console.WriteLine("{0}\nQoS:{1}, MsgId:{2}",e, Encoding.UTF8.GetString(e.GrantedQoSLevels) ,e.MessageId);//alert of wrong incoming message - where to?
         }
 
         private void OnButtonSensorStateChange()

@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartChainLib
 {
-    public delegate void LEDStateChangeDelegate(eLEDState i_State);
-    public delegate void ServoMotorStateChangeDelegate(eServoMotorState i_State);
-    public delegate void StepMotorStateChangeDelegate(eStepMotorState i_State);
-    public delegate void RGBLEDStateChangeDelegate(eRGBLEDState i_State);
+
 
     interface IArduino
     {

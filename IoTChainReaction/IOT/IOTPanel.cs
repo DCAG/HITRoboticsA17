@@ -36,18 +36,60 @@ namespace IOT
             m_SmartChainRunTime = new TimeSpan(0, 0, 0);
 
             m_Arduino = new Arduino();
+            m_Arduino.ArduinoConnectionStatusChange += M_Arduino_ArduinoConnectionStatusChange;
             m_Arduino.RGBLEDStateChange += M_Arduino_RGBLEDStateChange;
             m_Arduino.LEDStateChange += M_Arduino_LEDStateChange;
             m_Arduino.ServoMotorStateChange += M_Arduino_ServoMotorStateChange;
             m_Arduino.StepMotorStateChange += M_Arduino_StepMotorStateChange;
 
             m_WhiteCube = new WhiteCube();
+            m_WhiteCube.WhiteCubeConnectionStatusChange += M_WhiteCube_WhiteCubeConnectionStatusChange;
             m_WhiteCube.LightSensorStateChange += M_WhiteCube_LightSensorStateChange;
             m_WhiteCube.ButtonSensorStateChange += M_WhiteCube_ButtonSensorStateChange;
             m_WhiteCube.ReedSensorStateChange += M_WhiteCube_ReedSensorStateChange;
             m_WhiteCube.DTHSensorStateChange += M_WhiteCube_DTHSensorStateChange;
+        }
 
-            resetActuators();
+        private void M_WhiteCube_WhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus i_Status)
+        {
+            if (this.InvokeRequired)
+                this.Invoke(new WhiteCubeConnectionStatusChangeDelegate(M_WhiteCube_WhiteCubeConnectionStatusChange), i_Status);
+            else
+            {
+                switch (i_Status)
+                {
+                    case eWhiteCubeConnectionStatus.Disconnected:
+                        whiteCubeConnectionStateLabel.ForeColor = Color.Red;
+                        break;
+                    case eWhiteCubeConnectionStatus.Connected:
+                        whiteCubeConnectionStateLabel.ForeColor = Color.Green;
+                        break;
+                }
+                whiteCubeConnectionStateLabel.Text = i_Status.ToString();
+            }
+        }
+
+        private void M_Arduino_ArduinoConnectionStatusChange(eArduinoConnectionStatus i_Status)
+        {
+            if (this.InvokeRequired)
+                this.Invoke(new ArduinoConnectionStatusChangeDelegate(M_Arduino_ArduinoConnectionStatusChange), i_Status);
+            else
+            {
+                switch (i_Status)
+                {
+                    case eArduinoConnectionStatus.Detached:
+                        arduinoConnectionStateLabel.ForeColor = Color.Red;
+                        break;
+                    case eArduinoConnectionStatus.Attached:
+                        arduinoConnectionStateLabel.ForeColor = Color.Blue;
+                        break;
+                    case eArduinoConnectionStatus.Connected:
+                        arduinoConnectionStateLabel.ForeColor = Color.Green;
+                        resetActuators();
+                        break;
+                }
+                arduinoConnectionStateLabel.Text = i_Status.ToString();
+            }
         }
 
         private void m_SmartChainTimer_Tick(object sender, EventArgs e)
@@ -94,11 +136,29 @@ namespace IOT
                 startChainWhenActuatorsReady();
             }
         }
+        
+        private void IOTPanel_Load(object sender, EventArgs e)
+        {
+            m_Arduino.StartSubscribingToDeviceAttachAutoConnectAndDetachAutoClose();
+            if (m_Arduino.IsConnectedToComputer)
+            {
+                m_Arduino.OpenConnection();
+                resetActuators();
+            }
+
+            m_WhiteCube.Connect();    
+        }
 
         private void IOTPanel_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //m_Arduino.Disconnect();
-            //m_WhiteCube.Disconnect();
+            m_Arduino.StopSubscribingToDeviceAttachAutoConnectAndDetachAutoClose();
+            m_Arduino.ArduinoConnectionStatusChange -= M_Arduino_ArduinoConnectionStatusChange;
+
+            m_Arduino.CloseConnection();
+
+            m_WhiteCube.WhiteCubeConnectionStatusChange -= M_WhiteCube_WhiteCubeConnectionStatusChange;
+
+            m_WhiteCube.Disconnect();
         }
 
         private void resetActuators()
