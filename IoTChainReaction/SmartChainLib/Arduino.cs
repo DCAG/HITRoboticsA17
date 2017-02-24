@@ -23,11 +23,10 @@ namespace SmartChainLib
         }
 
         private string m_Port;
-        private string m_VID;
-        private string m_PID;
-
-        //public event EventArrivedEventHandler OnDeviceArrival;
-        //public event EventArrivedEventHandler OnDeviceRemoval;
+        //private string m_VID;
+        //private string m_PID;
+        
+        //public event EventArrivedEventHandler ArduinoConnectionStatusChange;
 
         public event LEDStateChangeDelegate LEDStateChange;
         public event ServoMotorStateChangeDelegate ServoMotorStateChange;
@@ -37,8 +36,8 @@ namespace SmartChainLib
         public Arduino()
         {
             m_IsConnectedToComputer = false;
-            m_VID = Properties.Settings.Default.ArduinoPID;
-            m_PID = Properties.Settings.Default.ArduinoVID;
+            //m_VID = Properties.Settings.Default.ArduinoPID;
+            //m_PID = Properties.Settings.Default.ArduinoVID;
             m_Port = Properties.Settings.Default.ArduinoCOMPort;
         }
 
@@ -109,47 +108,53 @@ namespace SmartChainLib
             return result;
         }
 
-        public void AutoDetectArduinoPort()
-        {
-            //OnDeviceArrival += OnArduinoArrival;
-            //OnDeviceRemoval += OnArduinoRemoval;
-            subscribeToWMIInstances();
-        }
-
         private void subscribeToWMIInstances()
         {
             string serialDeviceQuery = "SELECT * FROM {0} WITHIN 2 WHERE TargetInstance ISA 'Win32_SerialPort' AND TargetInstance.Name LIKE '%Arduino%'";
 
             string deviceArrivalQuery = string.Format(serialDeviceQuery, "__InstanceCreationEvent");
             ManagementEventWatcher arrivalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceArrivalQuery));
-            arrivalWatcher.EventArrived += OnArrival; //OnDeviceArrival;
+            arrivalWatcher.EventArrived += OnArrival;
             arrivalWatcher.Start();
 
             string deviceRemovalQuery = string.Format(serialDeviceQuery, "__InstanceDeletionEvent");
             ManagementEventWatcher removalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceRemovalQuery));
-            removalWatcher.EventArrived += OnRemoval;  //OnDeviceRemoval;
+            removalWatcher.EventArrived += OnRemoval;
             removalWatcher.Start();
+        }
+
+        public void OpenConnection(string i_Port)
+        {
+            m_ArduinoConnection = new SerialPort(m_Port);
+            m_ArduinoConnection.DataReceived += M_ArduinoConnection_DataReceived;
+            if (!m_ArduinoConnection.IsOpen)
+            {
+                m_ArduinoConnection.Open();
+            }
+        }
+
+        public void CloseConnection()
+        {
+            if (m_ArduinoConnection.IsOpen)
+            {
+                m_ArduinoConnection.Close();
+            }
         }
 
         private void OnArrival(object sender, EventArrivedEventArgs e)
         {
             ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
             m_Port = (string)instance["COMPort"];
-            Console.WriteLine("Arrival m_Port =  {0}", m_Port);
-            WriteLine("1Hello");
-            WriteLine("2World");
-            WriteLine("3Arduino repeat the time");
-            WriteLine("4" + DateTime.Now.ToString());
-            WriteLine("5Hello");
-            WriteLine("6Hello");
-            WriteLine("7Hello");
-            WriteLine("9Hello");
+
+            OpenConnection(m_Port);
         }
 
         private void OnRemoval(object sender, EventArrivedEventArgs e)
         {
             Console.WriteLine("Arrival m_Port =  {0}", m_Port);
             m_Port = string.Empty;
+
+            CloseConnection();
         }
         #endregion
 
