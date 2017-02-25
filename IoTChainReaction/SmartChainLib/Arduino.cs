@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SmartChainLib
 {
@@ -15,10 +12,11 @@ namespace SmartChainLib
     public delegate void StepMotorStateChangeDelegate(eStepMotorState i_State);
     public delegate void RGBLEDStateChangeDelegate(eRGBLEDState i_State);
 
-    public class Arduino : IArduino
+    public class Arduino
     {
         SerialPort m_ArduinoConnection;
-
+        private string m_Port;
+        private string m_PNPDeviceName;
         private bool m_IsConnectedToComputer;
         public bool IsConnectedToComputer
         {
@@ -28,27 +26,37 @@ namespace SmartChainLib
             }
         }
 
-        private string m_Port;
-        private string m_PNPDeviceName;
-        
+        private ManagementEventWatcher m_ArrivalWatcher;
+        private ManagementEventWatcher m_RemovalWatcher;
+
         public event ArduinoConnectionStatusChangeDelegate ArduinoConnectionStatusChange;
         public event LEDStateChangeDelegate LEDStateChange;
         public event ServoMotorStateChangeDelegate ServoMotorStateChange;
         public event StepMotorStateChangeDelegate StepMotorStateChange;
         public event RGBLEDStateChangeDelegate RGBLEDStateChange;
 
-        private ManagementEventWatcher m_ArrivalWatcher;
-        private ManagementEventWatcher m_RemovalWatcher;
-
+        /// <summary>
+        /// 
+        /// </summary>
         public Arduino()
         {
+            /*
+             * Get Arduino mapped serial port (COM#)
+             */ 
             m_PNPDeviceName = Properties.Settings.Default.ArduinoPNPDeviceName;
             m_Port = GetArduinoComPort(m_PNPDeviceName);
             m_IsConnectedToComputer = m_Port != string.Empty;
             OnArduinoConnectionStatusChange(m_IsConnectedToComputer ? eArduinoConnectionStatus.Attached : eArduinoConnectionStatus.Detached);
+
+            /*
+             * initialize arduino serialport object and notifications:
+             */
             m_ArduinoConnection = new SerialPort();
             m_ArduinoConnection.DataReceived += M_ArduinoConnection_DataReceived;
 
+            /*
+             * auto detect arrival/removal via WMI events notification - initialization of notification and query objects
+             */
             string serialDeviceQuery = "SELECT * FROM {0} WITHIN 2 WHERE TargetInstance ISA 'Win32_SerialPort' AND TargetInstance.Name LIKE '%{1}%'";
             string deviceArrivalQuery = string.Format(serialDeviceQuery, "__InstanceCreationEvent", m_PNPDeviceName);
             m_ArrivalWatcher = new ManagementEventWatcher(new WqlEventQuery(deviceArrivalQuery));
@@ -58,6 +66,9 @@ namespace SmartChainLib
             m_RemovalWatcher.EventArrived += OnRemoval;
         }
 
+        /// <summary>
+        /// Open the serial port connection to the arduino device
+        /// </summary>
         public void OpenConnection()
         {
             m_ArduinoConnection.PortName = m_Port;
@@ -75,6 +86,9 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// Close the serial port connection to the arduino device
+        /// </summary>
         public void CloseConnection()
         {
             if (m_ArduinoConnection.IsOpen)
@@ -91,11 +105,23 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// Send a message to the arduino device via the open serial connection.
+        /// </summary>
+        /// <param name="message">message to send to the arduino device</param>
         public void WriteLine(string message)
         {
-            m_ArduinoConnection.WriteLine(message + "\n");
+            if(IsConnectedToComputer)
+                m_ArduinoConnection.WriteLine(message + "\n");
         }
 
+        /// <summary>
+        /// invoked when the arduino device sent a message and it is waiting to be read.
+        /// reads the message, parse it with regular expression
+        /// and notify subscribers that something has happened (actuator state was changed)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void M_ArduinoConnection_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string data = m_ArduinoConnection.ReadLine();
@@ -127,6 +153,10 @@ namespace SmartChainLib
         }
 
         #region Autodetect Arduino connection
+        /// <summary>
+        /// notify that arduino connection state was chaned
+        /// </summary>
+        /// <param name="i_Status"></param>
         private void OnArduinoConnectionStatusChange(eArduinoConnectionStatus i_Status)
         {
             if(ArduinoConnectionStatusChange != null)
@@ -135,6 +165,12 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// Query WMI class win32_SerialPort for the COM port number that was mapped to the arduino device.
+        /// This is a static function therefore has i_DeviceName string parameter.
+        /// </summary>
+        /// <param name="i_DeviceName">The name of the device to include in the query for the COM port from the Win32_SerialPort WMI class</param>
+        /// <returns>COM port number as string e.g. 'COM4', if device was not found empty string is returned.</returns>
         public static string GetArduinoComPort(string i_DeviceName)
         {
             string arduinoDeviceQuery = string.Format("SELECT * FROM Win32_SerialPort WHERE Name LIKE '%{0}%'", i_DeviceName);
@@ -157,18 +193,33 @@ namespace SmartChainLib
             return result;
         }
 
-        public void StartSubscribingToDeviceAttachAutoConnectAndDetachAutoClose()
+        /// <summary>
+        /// Start listening to WMI arriavl and removal events for win32_SerialPort devices
+        /// when device arrives, initiates new connection.
+        /// </summary>
+        public void StartAutoReconnect()
         {
             m_ArrivalWatcher.Start();
             m_RemovalWatcher.Start();
         }
 
-        public void StopSubscribingToDeviceAttachAutoConnectAndDetachAutoClose()
+        /// <summary>
+        /// Stop listening to WMI arriavl and removal events for win32_SerialPort devices
+        /// </summary>
+        public void StopAutoReconnect()
         {
             m_ArrivalWatcher.Stop();
             m_RemovalWatcher.Stop();
         }
 
+        /// <summary>
+        /// invoked when arduino device is attached to the computer.
+        /// extracts the COM port number
+        /// open the connection
+        /// and alert all subscribers that the arduino device is present
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnArrival(object sender, EventArrivedEventArgs e)
         {
             ManagementBaseObject instance = (ManagementBaseObject)e.NewEvent["TargetInstance"];
@@ -179,6 +230,14 @@ namespace SmartChainLib
             OpenConnection();
         }
 
+        /// <summary>
+        /// invoked when arduino device is detached from the computer.
+        /// erase the COM port number
+        /// close the connection
+        /// and alert all subscribers that the arduino device is absent
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnRemoval(object sender, EventArrivedEventArgs e)
         {
             Console.WriteLine("Arrival m_Port =  {0}", m_Port);
@@ -191,26 +250,46 @@ namespace SmartChainLib
         #endregion
 
         #region Sensors And Actuators
+        /// <summary>
+        /// Send command to the arduino device to set the LED state
+        /// </summary>
+        /// <param name="i_State">desired LED state</param>
         public void SetLED(eLEDState i_State)
         {
             WriteLine(string.Format("AL{0}", (int)i_State));
         }
 
+        /// <summary>
+        /// Send command to the arduino device to set the Servo-Motor state
+        /// </summary>
+        /// <param name="i_State">desired Servo-Motor state</param>
         public void SetServoMotor(eServoMotorState i_State)
         {
             WriteLine(string.Format("AS{0}", (int)i_State));
         }
 
+        /// <summary>
+        /// Send command to the arduino device to set the Step-Motor state
+        /// </summary>
+        /// <param name="i_State">desired Step-Motor state</param>
         public void SetStepMotor(eStepMotorState i_State)
         {
             WriteLine(string.Format("AM{0}", (int)i_State));
         }
 
+        /// <summary>
+        /// Send command to the arduino device to set the RGB-LED state
+        /// </summary>
+        /// <param name="i_State">desired RGB-LED state</param>
         public void SetRGBLED(eRGBLEDState i_State)
         {
             WriteLine(string.Format("AR{0}", (int)i_State));
         }
 
+        /// <summary>
+        /// Notify all 'LEDStateChange' event subscribers that the LED state was changed
+        /// </summary>
+        /// <param name="i_State"></param>
         private void OnLEDStateChange(eLEDState i_State)
         {
             if(LEDStateChange != null)
@@ -219,6 +298,10 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// Notify all 'ServoMotorStateChange' event subscribers that the Servo-Motor state was changed
+        /// </summary>
+        /// <param name="i_State"></param>
         private void OnServoMotorStateChange(eServoMotorState i_State)
         {
             if (ServoMotorStateChange != null)
@@ -227,6 +310,10 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// Notify all 'StepMotorStateChange' event subscribers that the Step-Motor state was changed
+        /// </summary>
+        /// <param name="i_State"></param>
         private void OnStepMotorStateChange(eStepMotorState i_State)
         {
             if (StepMotorStateChange != null)
@@ -235,6 +322,10 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// Notify all 'RGBLEDStateChange' event subscribers that the RGB-LED state was changed
+        /// </summary>
+        /// <param name="i_State"></param>
         private void OnRGBLEDStateChange(eRGBLEDState i_State)
         {
             if (RGBLEDStateChange != null)

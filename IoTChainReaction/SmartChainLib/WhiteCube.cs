@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using Newtonsoft.Json;
-using Microsoft.CSharp;
+using System.Timers;
 
 namespace SmartChainLib
 {
@@ -16,7 +13,7 @@ namespace SmartChainLib
     public delegate void ReedSensorStateChangeDelegate();
     public delegate void DTHSensorStateChangeDelegate(float i_Tempeprature, float i_Humidity);
 
-    public class WhiteCube : IWhiteCube
+    public class WhiteCube
     {
         private string m_HostName;
         private int m_Port;
@@ -32,6 +29,9 @@ namespace SmartChainLib
         public event ReedSensorStateChangeDelegate ReedSensorStateChange;
         public event DTHSensorStateChangeDelegate DTHSensorStateChange;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public WhiteCube()
         {
             m_HostName = Properties.Settings.Default.MQTTServerAddress;
@@ -51,11 +51,20 @@ namespace SmartChainLib
             m_WhiteCubeClient.ConnectionClosed += M_WhiteCubeClient_ConnectionClosed;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void M_WhiteCubeClient_ConnectionClosed(object sender, EventArgs e)
         {
             OnWhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus.Disconnected);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i_Status"></param>
         private void OnWhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus i_Status)
         {
             if(WhiteCubeConnectionStatusChange != null)
@@ -64,6 +73,22 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// Subscriptions:
+        /// "matzi/#"
+        /// "matzi/led/status"
+        /// "matzi/+/status"
+        /// "[username]/[device]/status"
+        ///
+        /// Commands:
+        /// "matzi/led/command", { "device_name":"3PI_8505689","";"","":1}
+        /// 
+        /// Examples:
+        /// Button:
+        ///     { "device_name":"3PI_1206876", "type":"button", "ipaddress":"192.168.8.246", "bgn":3, "uptime":58, "sdk":"1.4.0", "version":"0.2.1" }
+        ///     onclick:
+        ///     { "device_name":"3PI_1206876", "type":"button" }
+        /// </summary>
         public void Connect()
         {
             const bool v_CleanSession = true;
@@ -80,26 +105,11 @@ namespace SmartChainLib
                     // log or report...
                 }
             }
-            /*
-            Subscriptions:
-            "matzi/#"
-            "matzi/led/status"
-            "matzi/+/status"
-            "[username]/[device]/status"
-
-            Commands:
-            "matzi/led/command", { "device_name":"3PI_8505689","";"","":1}
-            
-            Examples:
-            Button:
-                { "device_name":"3PI_1206876", "type":"button", "ipaddress":"192.168.8.246", "bgn":3, "uptime":58, "sdk":"1.4.0", "version":"0.2.1" }
-                onclick:
-                { "device_name":"3PI_1206876", "type":"button" }
-                onrelease:
-                { "device_name":"3PI_1206876", "type":"button" } X 2 (click and release)
-             */
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Disconnect()
         {
             if(m_WhiteCubeClient.IsConnected)
@@ -108,35 +118,43 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private string GenerateSessionID()
         {
             return Guid.NewGuid().ToString().Split('-')[4].Substring(0, 10);
         }
 
-
+        /// <summary>
+        ///
+        /// Ignore EXISTENCE notification messages like this one
+        ///  {
+        ///      "device_name" : "3PI_1206876",
+        ///      "type" : "button",
+        ///      "ipaddress" : "192.168.8.246",
+        ///      "bgn" : 3,
+        ///      "uptime" : 21,
+        ///      "sdk" : "1.4.0",
+        ///      "version" : "0.2.1"
+        ///  }
+        ///
+        /// Accept EVENT messsages like this one:
+        ///  {
+        ///      "device_name" : "3PI_1206876",
+        ///      "type" : "button"
+        ///  }
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             try
             {
                 dynamic messageJson = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(e.Message));
-                /*
-                 * Ignore EXISTENCE notification messages like this one
-                    {
-                        "device_name" : "3PI_1206876",
-                        "type" : "button",
-                        "ipaddress" : "192.168.8.246",
-                        "bgn" : 3,
-                        "uptime" : 21,
-                        "sdk" : "1.4.0",
-                        "version" : "0.2.1"
-                    }
-                *
-                *  Accept EVENT messsages like this one:
-                    {
-                        "device_name" : "3PI_1206876",
-                        "type" : "button"
-                    }
-                */
+
                 if (messageJson.ipaddress != null)
                     return; 
                 if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
@@ -162,6 +180,9 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void OnButtonSensorStateChange()
         {
             if(ButtonSensorStateChange != null)
@@ -170,6 +191,10 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i_Value"></param>
         private void OnLightSensorStateChange(int i_Value)
         {
             if(LightSensorStateChange != null)
@@ -178,6 +203,9 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         private void OnReedSensorStateChange()
         {
             if(ReedSensorStateChange != null)
@@ -186,6 +214,11 @@ namespace SmartChainLib
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="i_Tempeprature"></param>
+        /// <param name="i_Humidity"></param>
         private void OnDTHSensorStateChange(float i_Tempeprature, float i_Humidity)
         {
             if(DTHSensorStateChange != null)

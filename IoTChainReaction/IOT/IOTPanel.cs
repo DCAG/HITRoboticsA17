@@ -1,12 +1,6 @@
 ﻿using SmartChainLib;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace IOT
@@ -48,6 +42,30 @@ namespace IOT
             m_WhiteCube.ButtonSensorStateChange += M_WhiteCube_ButtonSensorStateChange;
             m_WhiteCube.ReedSensorStateChange += M_WhiteCube_ReedSensorStateChange;
             m_WhiteCube.DTHSensorStateChange += M_WhiteCube_DTHSensorStateChange;
+        }
+
+        private void IOTPanel_Load(object sender, EventArgs e)
+        {
+            m_Arduino.StartAutoReconnect();
+            if (m_Arduino.IsConnectedToComputer)
+            {
+                m_Arduino.OpenConnection();
+                resetActuators();
+            }
+
+            m_WhiteCube.Connect();
+        }
+
+        private void IOTPanel_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            m_Arduino.StopAutoReconnect();
+            m_Arduino.ArduinoConnectionStatusChange -= M_Arduino_ArduinoConnectionStatusChange;
+
+            m_Arduino.CloseConnection();
+
+            m_WhiteCube.WhiteCubeConnectionStatusChange -= M_WhiteCube_WhiteCubeConnectionStatusChange;
+
+            m_WhiteCube.Disconnect();
         }
 
         private void M_WhiteCube_WhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus i_Status)
@@ -135,30 +153,6 @@ namespace IOT
                 m_ActuatorsReadyTimer.Stop();
                 startChainWhenActuatorsReady();
             }
-        }
-        
-        private void IOTPanel_Load(object sender, EventArgs e)
-        {
-            m_Arduino.StartSubscribingToDeviceAttachAutoConnectAndDetachAutoClose();
-            if (m_Arduino.IsConnectedToComputer)
-            {
-                m_Arduino.OpenConnection();
-                resetActuators();
-            }
-
-            m_WhiteCube.Connect();    
-        }
-
-        private void IOTPanel_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            m_Arduino.StopSubscribingToDeviceAttachAutoConnectAndDetachAutoClose();
-            m_Arduino.ArduinoConnectionStatusChange -= M_Arduino_ArduinoConnectionStatusChange;
-
-            m_Arduino.CloseConnection();
-
-            m_WhiteCube.WhiteCubeConnectionStatusChange -= M_WhiteCube_WhiteCubeConnectionStatusChange;
-
-            m_WhiteCube.Disconnect();
         }
 
         private void resetActuators()
@@ -438,9 +432,14 @@ namespace IOT
 
         private void resetButton_Click(object sender, EventArgs e)
         {
-            //reset all text boxes...
-            //resetActuators();
+            //reset all text boxes
+            DTHSensorTextBox.Text = String.Empty;
+            LightSensorTextBox.Text = String.Empty;
+            ReedSensorTextBox.Text = String.Empty;
+            ButtonSensorTextBox.Text = String.Empty;
             
+            //reset actuators
+            resetActuators();
         }
     }
 }
