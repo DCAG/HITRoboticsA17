@@ -510,7 +510,9 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.ActuatorsGroupBox);
             this.ForeColor = System.Drawing.SystemColors.InfoText;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximizeBox = false;
             this.Name = "IOTPanel";
             this.Text = "IOT Panel";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.IOTPanel_FormClosing);
