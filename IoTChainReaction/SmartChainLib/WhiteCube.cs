@@ -3,7 +3,6 @@ using System.Text;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
 using Newtonsoft.Json;
-using System.Timers;
 
 namespace SmartChainLib
 {
@@ -30,7 +29,9 @@ namespace SmartChainLib
         public event DTHSensorStateChangeDelegate DTHSensorStateChange;
 
         /// <summary>
-        /// 
+        /// Load properties saved in the configuration file.
+        /// initialize MQTT client member object.
+        /// subscribe to MQTT notification messages.
         /// </summary>
         public WhiteCube()
         {
@@ -52,7 +53,8 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// 
+        /// Invoked when WhiteCube connection is closed.
+        /// Notifying all subscribers that the new connection status of WhiteCube is 'Disconnected'
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -62,7 +64,7 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// 
+        /// Notify all subscribers about the whiteCube connection status
         /// </summary>
         /// <param name="i_Status"></param>
         private void OnWhiteCubeConnectionStatusChange(eWhiteCubeConnectionStatus i_Status)
@@ -74,20 +76,7 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// Subscriptions:
-        /// "matzi/#"
-        /// "matzi/led/status"
-        /// "matzi/+/status"
-        /// "[username]/[device]/status"
-        ///
-        /// Commands:
-        /// "matzi/led/command", { "device_name":"3PI_8505689","";"","":1}
-        /// 
-        /// Examples:
-        /// Button:
-        ///     { "device_name":"3PI_1206876", "type":"button", "ipaddress":"192.168.8.246", "bgn":3, "uptime":58, "sdk":"1.4.0", "version":"0.2.1" }
-        ///     onclick:
-        ///     { "device_name":"3PI_1206876", "type":"button" }
+        /// initiate a connection to the MQTT server and updating all subscribers about the new connection status is 'Connected' if successful
         /// </summary>
         public void Connect()
         {
@@ -108,18 +97,23 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// 
+        /// Close the MQTT session connection to the server
         /// </summary>
         public void Disconnect()
         {
             if(m_WhiteCubeClient.IsConnected)
             {
                 m_WhiteCubeClient.Disconnect();
+                /*
+                 * notify that whiteCube sessions is closed, handled in this function (it was declared earlier)
+                 * private void M_WhiteCubeClient_ConnectionClosed(object sender, EventArgs e)
+                 */
+
             }
         }
 
         /// <summary>
-        /// 
+        /// Generate a randon session ID code, it is required for establishing a connection to the MQTT server
         /// </summary>
         /// <returns></returns>
         private string GenerateSessionID()
@@ -128,8 +122,13 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        ///
-        /// Ignore EXISTENCE notification messages like this one
+        /// This function invoked every time an MQTT message is transmitted to the program.
+        /// it then parse the message:
+        /// - first, turns byte array to unicode characters which compose a JSON string
+        /// - second, desirialize the JSON string into a dynamic object
+        /// - lastly, sends a notification about the sensor that updated its status (with values received, if there are any).
+        /// 
+        /// Ignore EXISTENCE notification messages like this one:
         ///  {
         ///      "device_name" : "3PI_1206876",
         ///      "type" : "button",
@@ -155,7 +154,7 @@ namespace SmartChainLib
             {
                 dynamic messageJson = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(e.Message));
 
-                if (messageJson.ipaddress != null)
+                if (messageJson.ipaddress != null) // Ignore EXISTENCE notification messages (with ipaddress)
                     return; 
                 if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
                 {
@@ -181,7 +180,7 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// 
+        /// Notify all 'ReedSensorStateChange' event subscribers that physical button was clicked
         /// </summary>
         private void OnButtonSensorStateChange()
         {
@@ -192,9 +191,9 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// 
+        /// Notify all 'LightSensorStateChange' event subscribers about the current light value that was sensed
         /// </summary>
-        /// <param name="i_Value"></param>
+        /// <param name="i_Value">light value</param>
         private void OnLightSensorStateChange(int i_Value)
         {
             if(LightSensorStateChange != null)
@@ -204,7 +203,7 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// 
+        /// Notify all 'ReedSensorStateChange' event subscribers that reed sensor sensed a magnet
         /// </summary>
         private void OnReedSensorStateChange()
         {
@@ -215,30 +214,16 @@ namespace SmartChainLib
         }
 
         /// <summary>
-        /// 
+        /// Notify all 'DTHSensorStateChange' event subscribers about the current temperature and humidity
+        /// that was sensed
         /// </summary>
-        /// <param name="i_Tempeprature"></param>
+        /// <param name="i_Temperature"></param>
         /// <param name="i_Humidity"></param>
-        private void OnDTHSensorStateChange(float i_Tempeprature, float i_Humidity)
+        private void OnDTHSensorStateChange(float i_Temperature, float i_Humidity)
         {
             if(DTHSensorStateChange != null)
             {
-                DTHSensorStateChange.Invoke(i_Tempeprature, i_Humidity);
-            }
-        }
-
-        public void RequestSensorStatus(eWhiteCubeSensor i_Sensor)
-        {
-            switch (i_Sensor)
-            {
-                case eWhiteCubeSensor.button:
-                case eWhiteCubeSensor.reed:
-                    //do not send ahything - when these sensors detect something they will send a message.
-                    break;
-                case eWhiteCubeSensor.dth:
-                case eWhiteCubeSensor.light:
-                    m_WhiteCubeClient.Publish(string.Format("{0}/{1}/status", m_UserName, i_Sensor),new byte[] { 0 });
-                    break;
+                DTHSensorStateChange.Invoke(i_Temperature, i_Humidity);
             }
         }
     }

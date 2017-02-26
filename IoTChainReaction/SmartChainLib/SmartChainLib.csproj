@@ -65,14 +65,12 @@
     <Compile Include="eArduinoConnectionStatus.cs" />
     <Compile Include="eWhiteCubeConnectionStatus.cs" />
     <Compile Include="eWhiteCubeSensor.cs" />
-    <Compile Include="IArduino.cs" />
-    <Compile Include="IWhiteCube.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Test.cs" />
+    <Compile Include="Tests\Test.cs" />
     <Compile Include="WhiteCube.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

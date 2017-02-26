@@ -16,7 +16,7 @@ namespace SmartChainLib
     {
         SerialPort m_ArduinoConnection;
         private string m_Port;
-        private string m_PNPDeviceName;
+        private string m_PNPDeviceName; //Plug and Play Device Name
         private bool m_IsConnectedToComputer;
         public bool IsConnectedToComputer
         {

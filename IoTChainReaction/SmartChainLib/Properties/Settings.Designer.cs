@@ -70,22 +70,10 @@ namespace SmartChainLib.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("COM3")]
-        public string ArduinoCOMPort {
-            get {
-                return ((string)(this["ArduinoCOMPort"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Arduino Uno")]
         public string ArduinoPNPDeviceName {
             get {
                 return ((string)(this["ArduinoPNPDeviceName"]));
-            }
-            set {
-                this["ArduinoPNPDeviceName"] = value;
             }
         }
     }

@@ -17,10 +17,7 @@
     <Setting Name="KeepAlivePeriod" Type="System.UInt16" Scope="Application">
       <Value Profile="(Default)">60</Value>
     </Setting>
-    <Setting Name="ArduinoCOMPort" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">COM3</Value>
-    </Setting>
-    <Setting Name="ArduinoPNPDeviceName" Type="System.String" Scope="User">
+    <Setting Name="ArduinoPNPDeviceName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Arduino Uno</Value>
     </Setting>
   </Settings>

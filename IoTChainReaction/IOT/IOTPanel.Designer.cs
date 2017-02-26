@@ -89,7 +89,7 @@
             // StepMotorTextBox
             // 
             this.StepMotorTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.StepMotorTextBox.Location = new System.Drawing.Point(266, 347);
+            this.StepMotorTextBox.Location = new System.Drawing.Point(266, 344);
             this.StepMotorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.StepMotorTextBox.Name = "StepMotorTextBox";
             this.StepMotorTextBox.ReadOnly = true;
@@ -133,7 +133,7 @@
             // 
             // RgbTextBox
             // 
-            this.RgbTextBox.Location = new System.Drawing.Point(58, 137);
+            this.RgbTextBox.Location = new System.Drawing.Point(58, 136);
             this.RgbTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.RgbTextBox.Name = "RgbTextBox";
             this.RgbTextBox.ReadOnly = true;
@@ -228,7 +228,7 @@
             // LEDTextBox
             // 
             this.LEDTextBox.ForeColor = System.Drawing.SystemColors.InfoText;
-            this.LEDTextBox.Location = new System.Drawing.Point(266, 168);
+            this.LEDTextBox.Location = new System.Drawing.Point(266, 166);
             this.LEDTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.LEDTextBox.Name = "LEDTextBox";
             this.LEDTextBox.ReadOnly = true;
@@ -238,7 +238,7 @@
             // 
             // ServoMotorTextBox
             // 
-            this.ServoMotorTextBox.Location = new System.Drawing.Point(76, 168);
+            this.ServoMotorTextBox.Location = new System.Drawing.Point(76, 166);
             this.ServoMotorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.ServoMotorTextBox.Name = "ServoMotorTextBox";
             this.ServoMotorTextBox.ReadOnly = true;
@@ -330,23 +330,23 @@
             // 
             // DTHSensorTextBox
             // 
-            this.DTHSensorTextBox.Location = new System.Drawing.Point(215, 152);
+            this.DTHSensorTextBox.Location = new System.Drawing.Point(215, 140);
             this.DTHSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.DTHSensorTextBox.Multiline = true;
             this.DTHSensorTextBox.Name = "DTHSensorTextBox";
             this.DTHSensorTextBox.ReadOnly = true;
-            this.DTHSensorTextBox.Size = new System.Drawing.Size(78, 34);
+            this.DTHSensorTextBox.Size = new System.Drawing.Size(78, 45);
             this.DTHSensorTextBox.TabIndex = 5;
             this.DTHSensorTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // LightSensorTextBox
             // 
-            this.LightSensorTextBox.Location = new System.Drawing.Point(52, 152);
+            this.LightSensorTextBox.Location = new System.Drawing.Point(52, 140);
             this.LightSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.LightSensorTextBox.Multiline = true;
             this.LightSensorTextBox.Name = "LightSensorTextBox";
             this.LightSensorTextBox.ReadOnly = true;
-            this.LightSensorTextBox.Size = new System.Drawing.Size(76, 34);
+            this.LightSensorTextBox.Size = new System.Drawing.Size(76, 45);
             this.LightSensorTextBox.TabIndex = 4;
             this.LightSensorTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
