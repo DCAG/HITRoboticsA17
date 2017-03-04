@@ -1,2 +1,2 @@
 # HITRoboticsA17
-[[/Images/IoTPanelGUI.png]]
+![IoTPanelGUI](/Images/IoTPanelGUI.png?raw=true "IoTPanelGUI")
