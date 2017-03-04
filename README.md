@@ -1,2 +1,2 @@
 # HITRoboticsA17
-[[Images/IoTPanelGUI.png]]
+[[/Images/IoTPanelGUI.png]]
