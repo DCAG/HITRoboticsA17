@@ -8,5 +8,3 @@ Get-EventSubscriber -SourceIdentifier insert | unregister-event
 Get-Event -SourceIdentifier insert | Remove-Event
 
 $res[0].DeviceID
-
-[DateTime]::Now.ToString()
