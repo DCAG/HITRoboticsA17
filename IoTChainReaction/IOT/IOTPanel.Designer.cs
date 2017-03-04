@@ -47,6 +47,12 @@
             this.LedButton = new System.Windows.Forms.Button();
             this.ServoMotorButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.updateSensorsStatusButton = new System.Windows.Forms.Button();
+            this.buttonSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.reedSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.dthSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.lightSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.pingSensorsButton = new System.Windows.Forms.Button();
             this.ReedSensorTextBox = new System.Windows.Forms.TextBox();
             this.ButtonSensorTextBox = new System.Windows.Forms.TextBox();
             this.DTHSensorTextBox = new System.Windows.Forms.TextBox();
@@ -63,13 +69,11 @@
             this.resetButton = new System.Windows.Forms.Button();
             this.RunTimeLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.pingSensorsButton = new System.Windows.Forms.Button();
-            this.lightSensorIdTimeLabel = new System.Windows.Forms.Label();
-            this.dthSensorIdTimeLabel = new System.Windows.Forms.Label();
-            this.reedSensorIdTimeLabel = new System.Windows.Forms.Label();
-            this.buttonSensorIdTimeLabel = new System.Windows.Forms.Label();
-            this.updateSensorsStatusButton = new System.Windows.Forms.Button();
             this.connectMQTTServerButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.ActuatorsGroupBox.SuspendLayout();
             this.RGBLedGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -296,6 +300,10 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.updateSensorsStatusButton);
             this.groupBox1.Controls.Add(this.buttonSensorIdTimeLabel);
             this.groupBox1.Controls.Add(this.reedSensorIdTimeLabel);
@@ -319,6 +327,64 @@
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Sensors";
+            // 
+            // updateSensorsStatusButton
+            // 
+            this.updateSensorsStatusButton.Enabled = false;
+            this.updateSensorsStatusButton.Location = new System.Drawing.Point(173, 209);
+            this.updateSensorsStatusButton.Name = "updateSensorsStatusButton";
+            this.updateSensorsStatusButton.Size = new System.Drawing.Size(90, 69);
+            this.updateSensorsStatusButton.TabIndex = 13;
+            this.updateSensorsStatusButton.Text = "Update status";
+            this.updateSensorsStatusButton.UseVisualStyleBackColor = true;
+            this.updateSensorsStatusButton.Click += new System.EventHandler(this.updateSensorsStatusButton_Click);
+            // 
+            // buttonSensorIdTimeLabel
+            // 
+            this.buttonSensorIdTimeLabel.AutoSize = true;
+            this.buttonSensorIdTimeLabel.Location = new System.Drawing.Point(173, 309);
+            this.buttonSensorIdTimeLabel.Name = "buttonSensorIdTimeLabel";
+            this.buttonSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.buttonSensorIdTimeLabel.TabIndex = 12;
+            this.buttonSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // reedSensorIdTimeLabel
+            // 
+            this.reedSensorIdTimeLabel.AutoSize = true;
+            this.reedSensorIdTimeLabel.Location = new System.Drawing.Point(229, 349);
+            this.reedSensorIdTimeLabel.Name = "reedSensorIdTimeLabel";
+            this.reedSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.reedSensorIdTimeLabel.TabIndex = 11;
+            this.reedSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // dthSensorIdTimeLabel
+            // 
+            this.dthSensorIdTimeLabel.AutoSize = true;
+            this.dthSensorIdTimeLabel.Location = new System.Drawing.Point(229, 91);
+            this.dthSensorIdTimeLabel.Name = "dthSensorIdTimeLabel";
+            this.dthSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.dthSensorIdTimeLabel.TabIndex = 10;
+            this.dthSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // lightSensorIdTimeLabel
+            // 
+            this.lightSensorIdTimeLabel.AutoSize = true;
+            this.lightSensorIdTimeLabel.Location = new System.Drawing.Point(171, 52);
+            this.lightSensorIdTimeLabel.Name = "lightSensorIdTimeLabel";
+            this.lightSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.lightSensorIdTimeLabel.TabIndex = 9;
+            this.lightSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // pingSensorsButton
+            // 
+            this.pingSensorsButton.Enabled = false;
+            this.pingSensorsButton.Location = new System.Drawing.Point(173, 118);
+            this.pingSensorsButton.Name = "pingSensorsButton";
+            this.pingSensorsButton.Size = new System.Drawing.Size(90, 69);
+            this.pingSensorsButton.TabIndex = 8;
+            this.pingSensorsButton.Text = "Ping sensors";
+            this.pingSensorsButton.UseVisualStyleBackColor = true;
+            this.pingSensorsButton.Click += new System.EventHandler(this.pingSensorsButton_Click);
             // 
             // ReedSensorTextBox
             // 
@@ -508,64 +574,6 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "Run Time:";
             // 
-            // pingSensorsButton
-            // 
-            this.pingSensorsButton.Enabled = false;
-            this.pingSensorsButton.Location = new System.Drawing.Point(173, 118);
-            this.pingSensorsButton.Name = "pingSensorsButton";
-            this.pingSensorsButton.Size = new System.Drawing.Size(90, 69);
-            this.pingSensorsButton.TabIndex = 8;
-            this.pingSensorsButton.Text = "Ping sensors";
-            this.pingSensorsButton.UseVisualStyleBackColor = true;
-            this.pingSensorsButton.Click += new System.EventHandler(this.pingSensorsButton_Click);
-            // 
-            // lightSensorIdTimeLabel
-            // 
-            this.lightSensorIdTimeLabel.AutoSize = true;
-            this.lightSensorIdTimeLabel.Location = new System.Drawing.Point(159, 34);
-            this.lightSensorIdTimeLabel.Name = "lightSensorIdTimeLabel";
-            this.lightSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
-            this.lightSensorIdTimeLabel.TabIndex = 9;
-            this.lightSensorIdTimeLabel.Text = "00:00:00";
-            // 
-            // dthSensorIdTimeLabel
-            // 
-            this.dthSensorIdTimeLabel.AutoSize = true;
-            this.dthSensorIdTimeLabel.Location = new System.Drawing.Point(226, 61);
-            this.dthSensorIdTimeLabel.Name = "dthSensorIdTimeLabel";
-            this.dthSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
-            this.dthSensorIdTimeLabel.TabIndex = 10;
-            this.dthSensorIdTimeLabel.Text = "00:00:00";
-            // 
-            // reedSensorIdTimeLabel
-            // 
-            this.reedSensorIdTimeLabel.AutoSize = true;
-            this.reedSensorIdTimeLabel.Location = new System.Drawing.Point(226, 349);
-            this.reedSensorIdTimeLabel.Name = "reedSensorIdTimeLabel";
-            this.reedSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
-            this.reedSensorIdTimeLabel.TabIndex = 11;
-            this.reedSensorIdTimeLabel.Text = "00:00:00";
-            // 
-            // buttonSensorIdTimeLabel
-            // 
-            this.buttonSensorIdTimeLabel.AutoSize = true;
-            this.buttonSensorIdTimeLabel.Location = new System.Drawing.Point(159, 325);
-            this.buttonSensorIdTimeLabel.Name = "buttonSensorIdTimeLabel";
-            this.buttonSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
-            this.buttonSensorIdTimeLabel.TabIndex = 12;
-            this.buttonSensorIdTimeLabel.Text = "00:00:00";
-            // 
-            // updateSensorsStatusButton
-            // 
-            this.updateSensorsStatusButton.Enabled = false;
-            this.updateSensorsStatusButton.Location = new System.Drawing.Point(173, 209);
-            this.updateSensorsStatusButton.Name = "updateSensorsStatusButton";
-            this.updateSensorsStatusButton.Size = new System.Drawing.Size(90, 69);
-            this.updateSensorsStatusButton.TabIndex = 13;
-            this.updateSensorsStatusButton.Text = "Update status";
-            this.updateSensorsStatusButton.UseVisualStyleBackColor = true;
-            this.updateSensorsStatusButton.Click += new System.EventHandler(this.updateSensorsStatusButton_Click);
-            // 
             // connectMQTTServerButton
             // 
             this.connectMQTTServerButton.Location = new System.Drawing.Point(348, 39);
@@ -575,6 +583,42 @@
             this.connectMQTTServerButton.Text = "Connect MQTT Server";
             this.connectMQTTServerButton.UseVisualStyleBackColor = true;
             this.connectMQTTServerButton.Click += new System.EventHandler(this.connectMQTTServerButton_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(214, 331);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(65, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Last pinged:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(213, 73);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(65, 13);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Last pinged:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(155, 34);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(65, 13);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "Last pinged:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(157, 291);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(65, 13);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "Last pinged:";
             // 
             // IOTPanel
             // 
@@ -654,6 +698,10 @@
         private System.Windows.Forms.Label lightSensorIdTimeLabel;
         private System.Windows.Forms.Button pingSensorsButton;
         private System.Windows.Forms.Button connectMQTTServerButton;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label3;
     }
 }
 
