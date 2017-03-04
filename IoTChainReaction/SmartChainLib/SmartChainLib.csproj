@@ -57,22 +57,22 @@
     <Reference Include="System.Management" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arduino.cs" />
-    <Compile Include="Actuators\eLEDState.cs" />
-    <Compile Include="Actuators\eRGBLEDState.cs" />
-    <Compile Include="Actuators\eServoMotorState.cs" />
-    <Compile Include="Actuators\eStepMotorState.cs" />
-    <Compile Include="eArduinoConnectionStatus.cs" />
-    <Compile Include="eWhiteCubeCommand.cs" />
-    <Compile Include="eWhiteCubeConnectionStatus.cs" />
-    <Compile Include="eWhiteCubeSensor.cs" />
+    <Compile Include="Arduino\Arduino.cs" />
+    <Compile Include="Arduino\eLEDState.cs" />
+    <Compile Include="Arduino\eRGBLEDState.cs" />
+    <Compile Include="Arduino\eServoMotorState.cs" />
+    <Compile Include="Arduino\eStepMotorState.cs" />
+    <Compile Include="Arduino\eArduinoConnectionStatus.cs" />
+    <Compile Include="WhiteCube\eWhiteCubeCommand.cs" />
+    <Compile Include="WhiteCube\eWhiteCubeConnectionStatus.cs" />
+    <Compile Include="WhiteCube\eWhiteCubeDevice.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Tests\Test.cs" />
-    <Compile Include="WhiteCube.cs" />
+    <Compile Include="WhiteCube\WhiteCube.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

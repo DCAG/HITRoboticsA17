@@ -11,7 +11,7 @@ namespace SmartChainLib
     public delegate void LightSensorStateChangeDelegate(int i_Value);
     public delegate void ReedSensorStateChangeDelegate();
     public delegate void DTHSensorStateChangeDelegate(float i_Tempeprature, float i_Humidity);
-    public delegate void SensorIdentificationNotificationDelegate(eWhiteCubeSensor i_Sensor);
+    public delegate void DeviceIdentificationNotificationDelegate(eWhiteCubeDevice i_Sensor);
     public class WhiteCube
     {
         private string m_HostName;
@@ -22,7 +22,7 @@ namespace SmartChainLib
 
         MqttClient m_WhiteCubeClient;
 
-        public event SensorIdentificationNotificationDelegate SensorIdentificationNotification;
+        public event DeviceIdentificationNotificationDelegate DeviceIdentificationNotification;
         public event WhiteCubeConnectionStatusChangeDelegate WhiteCubeConnectionStatusChange;
         public event ButtonSensorStateChangeDelegate ButtonSensorStateChange;
         public event LightSensorStateChangeDelegate LightSensorStateChange;
@@ -129,7 +129,7 @@ namespace SmartChainLib
         /// - second, desirialize the JSON string into a dynamic object
         /// - lastly, sends a notification about the sensor that updated its status (with values received, if there are any).
         /// 
-        /// Ignore EXISTENCE notification messages like this one:
+        /// treat EXISTENCE notification messages like this one:
         ///  {
         ///      "device_name" : "3PI_1206876",
         ///      "type" : "button",
@@ -140,12 +140,12 @@ namespace SmartChainLib
         ///      "version" : "0.2.1"
         ///  }
         ///
-        /// Accept EVENT messsages like this one:
+        /// and EVENT messsages like this one:
         ///  {
         ///      "device_name" : "3PI_1206876",
         ///      "type" : "button"
         ///  }
-        ///
+        /// differently (activate seperate events - one for identification/ping and one for devices data)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -157,38 +157,38 @@ namespace SmartChainLib
 
                 if (messageJson.ipaddress != null) // EXISTENCE notification messages (with ipaddress) are used for identification (or ping)
                 {
-                    if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
+                    if ((string)messageJson.type == eWhiteCubeDevice.button.ToString())
                     {
-                        OnSensorExistenceNotification(eWhiteCubeSensor.button);
+                        OnDeviceExistenceNotification(eWhiteCubeDevice.button);
                     }
-                    else if ((string)messageJson.type == eWhiteCubeSensor.light.ToString())
+                    else if ((string)messageJson.type == eWhiteCubeDevice.light.ToString())
                     {
-                        OnSensorExistenceNotification(eWhiteCubeSensor.light);
+                        OnDeviceExistenceNotification(eWhiteCubeDevice.light);
                     }
-                    else if ((string)messageJson.type == eWhiteCubeSensor.reed.ToString())
+                    else if ((string)messageJson.type == eWhiteCubeDevice.reed.ToString())
                     {
-                        OnSensorExistenceNotification(eWhiteCubeSensor.reed);
+                        OnDeviceExistenceNotification(eWhiteCubeDevice.reed);
                     }
-                    else if ((string)messageJson.type == eWhiteCubeSensor.dth.ToString())
+                    else if ((string)messageJson.type == eWhiteCubeDevice.dth.ToString())
                     {
-                        OnSensorExistenceNotification(eWhiteCubeSensor.dth);
+                        OnDeviceExistenceNotification(eWhiteCubeDevice.dth);
                     }
                 }
-                else
+                else //devices data and/or activation
                 {
-                    if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
+                    if ((string)messageJson.type == eWhiteCubeDevice.button.ToString())
                     {
                         OnButtonSensorStateChange();
                     }
-                    else if ((string)messageJson.type == eWhiteCubeSensor.light.ToString())
+                    else if ((string)messageJson.type == eWhiteCubeDevice.light.ToString())
                     {
                         OnLightSensorStateChange((int)messageJson.value);
                     }
-                    else if ((string)messageJson.type == eWhiteCubeSensor.reed.ToString())
+                    else if ((string)messageJson.type == eWhiteCubeDevice.reed.ToString())
                     {
                         OnReedSensorStateChange();
                     }
-                    else if ((string)messageJson.type == eWhiteCubeSensor.dth.ToString())
+                    else if ((string)messageJson.type == eWhiteCubeDevice.dth.ToString())
                     {
                         OnDTHSensorStateChange((float)messageJson.temperature, (float)messageJson.humidity);
                     }
@@ -204,11 +204,11 @@ namespace SmartChainLib
         /// Notify all 'SensorExistenceNotification' event subscribers that a sensor identification message was sent
         /// </summary>
         /// <param name="i_Sensor"></param>
-        private void OnSensorExistenceNotification(eWhiteCubeSensor i_Sensor)
+        private void OnDeviceExistenceNotification(eWhiteCubeDevice i_Sensor)
         {
-            if(SensorIdentificationNotification != null)
+            if(DeviceIdentificationNotification != null)
             {
-                SensorIdentificationNotification.Invoke(i_Sensor);
+                DeviceIdentificationNotification.Invoke(i_Sensor);
             }
         }
 

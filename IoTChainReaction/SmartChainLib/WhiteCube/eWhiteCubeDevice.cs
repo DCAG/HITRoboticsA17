@@ -1,6 +1,6 @@
 ﻿namespace SmartChainLib
 {
-    public enum eWhiteCubeSensor
+    public enum eWhiteCubeDevice
     {
         button,
         light,

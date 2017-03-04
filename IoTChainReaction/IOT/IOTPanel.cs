@@ -54,7 +54,7 @@ namespace IOT
              * initialize WhiteCube object and subscribe to all of its notifications
              */
             m_WhiteCube = new WhiteCube();
-            m_WhiteCube.SensorIdentificationNotification += M_WhiteCube_SensorIdentificationNotification;
+            m_WhiteCube.DeviceIdentificationNotification += M_WhiteCube_SensorIdentificationNotification;
             m_WhiteCube.WhiteCubeConnectionStatusChange += M_WhiteCube_WhiteCubeConnectionStatusChange;
             m_WhiteCube.LightSensorStateChange += M_WhiteCube_LightSensorStateChange;
             m_WhiteCube.ButtonSensorStateChange += M_WhiteCube_ButtonSensorStateChange;
@@ -68,26 +68,26 @@ namespace IOT
         /// { "device_name":"3PI_1152728", "type":"led", "ipaddress":"192.168.8.116", "bgn":3, "uptime":77, "sdk":"1.4.0", "version":"0.2.1" }
         /// </summary>
         /// <param name="i_Sensor"></param>
-        private void M_WhiteCube_SensorIdentificationNotification(eWhiteCubeSensor i_Sensor)
+        private void M_WhiteCube_SensorIdentificationNotification(eWhiteCubeDevice i_Sensor)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new SensorIdentificationNotificationDelegate(M_WhiteCube_SensorIdentificationNotification), i_Sensor);
+                this.Invoke(new DeviceIdentificationNotificationDelegate(M_WhiteCube_SensorIdentificationNotification), i_Sensor);
             }
             else
             {
                 switch (i_Sensor)
                 {
-                    case eWhiteCubeSensor.button:
+                    case eWhiteCubeDevice.button:
                         buttonSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
                         break;
-                    case eWhiteCubeSensor.light:
+                    case eWhiteCubeDevice.light:
                         lightSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
                         break;
-                    case eWhiteCubeSensor.dth:
+                    case eWhiteCubeDevice.dth:
                         dthSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
                         break;
-                    case eWhiteCubeSensor.reed:
+                    case eWhiteCubeDevice.reed:
                         reedSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
                         break;
                     default:
