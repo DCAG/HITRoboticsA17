@@ -9,6 +9,8 @@ namespace IOT
 
     public partial class IOTPanel : Form
     {
+        readonly Color r_SmartChainBackColor = Color.LightGreen;
+
         Timer m_ActuatorsReadyTimer;
 
         private Timer m_SmartChainTimer;
@@ -52,11 +54,46 @@ namespace IOT
              * initialize WhiteCube object and subscribe to all of its notifications
              */
             m_WhiteCube = new WhiteCube();
+            m_WhiteCube.SensorIdentificationNotification += M_WhiteCube_SensorIdentificationNotification;
             m_WhiteCube.WhiteCubeConnectionStatusChange += M_WhiteCube_WhiteCubeConnectionStatusChange;
             m_WhiteCube.LightSensorStateChange += M_WhiteCube_LightSensorStateChange;
             m_WhiteCube.ButtonSensorStateChange += M_WhiteCube_ButtonSensorStateChange;
             m_WhiteCube.ReedSensorStateChange += M_WhiteCube_ReedSensorStateChange;
             m_WhiteCube.DTHSensorStateChange += M_WhiteCube_DTHSensorStateChange;
+        }
+
+        /// <summary>
+        /// invoked whenever identify|exitence|ping message is sent
+        /// e.g.:
+        /// { "device_name":"3PI_1152728", "type":"led", "ipaddress":"192.168.8.116", "bgn":3, "uptime":77, "sdk":"1.4.0", "version":"0.2.1" }
+        /// </summary>
+        /// <param name="i_Sensor"></param>
+        private void M_WhiteCube_SensorIdentificationNotification(eWhiteCubeSensor i_Sensor)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new SensorIdentificationNotificationDelegate(M_WhiteCube_SensorIdentificationNotification), i_Sensor);
+            }
+            else
+            {
+                switch (i_Sensor)
+                {
+                    case eWhiteCubeSensor.button:
+                        buttonSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
+                        break;
+                    case eWhiteCubeSensor.light:
+                        lightSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
+                        break;
+                    case eWhiteCubeSensor.dth:
+                        dthSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
+                        break;
+                    case eWhiteCubeSensor.reed:
+                        reedSensorIdTimeLabel.Text = DateTime.Now.ToLongTimeString();
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -117,9 +154,17 @@ namespace IOT
                 {
                     case eWhiteCubeConnectionStatus.Disconnected:
                         whiteCubeConnectionStateLabel.ForeColor = Color.Red;
+                        pingSensorsButton.Enabled = false;
+                        updateSensorsStatusButton.Enabled = false;
+                        connectMQTTServerButton.Visible = true;
+                        connectMQTTServerButton.Enabled = true;
                         break;
                     case eWhiteCubeConnectionStatus.Connected:
                         whiteCubeConnectionStateLabel.ForeColor = Color.Green;
+                        pingSensorsButton.Enabled = true;
+                        updateSensorsStatusButton.Enabled = true;
+                        connectMQTTServerButton.Visible = false;
+                        connectMQTTServerButton.Enabled = false;
                         break;
                 }
                 whiteCubeConnectionStateLabel.Text = i_Status.ToString();
@@ -234,7 +279,7 @@ namespace IOT
             {
                 UpdateControlsText(StepMotorTextBox, i_State.ToString());
                 if (m_SmartChainActive)
-                    StepMotorTextBox.BackColor = Color.Yellow;
+                    StepMotorTextBox.BackColor = r_SmartChainBackColor;
             }
         }
         /// <summary>
@@ -252,7 +297,7 @@ namespace IOT
             {
                 UpdateControlsText(ServoMotorTextBox, i_State.ToString());
                 if (m_SmartChainActive)
-                    ServoMotorTextBox.BackColor = Color.Yellow;
+                    ServoMotorTextBox.BackColor = r_SmartChainBackColor;
             }
         }
         /// <summary>
@@ -279,7 +324,7 @@ namespace IOT
                 }
 
                 if (m_SmartChainActive)
-                    LEDTextBox.BackColor = Color.Yellow;
+                    LEDTextBox.BackColor = r_SmartChainBackColor;
             }
         }
         /// <summary>
@@ -298,7 +343,7 @@ namespace IOT
                 UpdateControlsText(RgbTextBox, i_State.ToString());
                 if (m_SmartChainActive)
                 {
-                    RgbTextBox.BackColor = Color.Yellow;
+                    RgbTextBox.BackColor = r_SmartChainBackColor;
                     endSmartChain();
                 }
             }
@@ -511,7 +556,7 @@ namespace IOT
             }
             else
             {
-                ButtonSensorTextBox.BackColor = Color.Yellow;
+                ButtonSensorTextBox.BackColor = r_SmartChainBackColor;
                 m_SmartChainTimer.Start();
                 m_WhiteCube.ButtonSensorStateChange -= SmartChainButton_Clicked;
                 m_Arduino.SetLED(eLEDState.On);
@@ -536,7 +581,7 @@ namespace IOT
             }
             else
             {
-                LightSensorTextBox.BackColor = Color.Yellow;
+                LightSensorTextBox.BackColor = r_SmartChainBackColor;
                 m_WhiteCube.LightSensorStateChange -= SmartChainLight_Sensed;
                 m_Arduino.SetStepMotor(eStepMotorState.On);
                 m_WhiteCube.ReedSensorStateChange += SmartChainReedMagnet_Sensed;
@@ -560,7 +605,7 @@ namespace IOT
             }
             else
             {
-                ReedSensorTextBox.BackColor = Color.Yellow;
+                ReedSensorTextBox.BackColor = r_SmartChainBackColor;
                 m_WhiteCube.ReedSensorStateChange -= SmartChainReedMagnet_Sensed;
                 m_Arduino.SetStepMotor(eStepMotorState.Off);
                 m_Arduino.SetServoMotor(eServoMotorState.On);
@@ -581,11 +626,11 @@ namespace IOT
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new DTHSensorStateChangeDelegate(SmartChainDTH_Sensed));
+                this.Invoke(new DTHSensorStateChangeDelegate(SmartChainDTH_Sensed), i_Temperature, i_Humidity);
             }
             else
             {
-                DTHSensorTextBox.BackColor = Color.Yellow;
+                DTHSensorTextBox.BackColor = r_SmartChainBackColor;
                 m_WhiteCube.DTHSensorStateChange -= SmartChainDTH_Sensed;
                 if (i_Temperature + i_Humidity > 60)
                     m_Arduino.SetRGBLED(eRGBLEDState.Yellow);
@@ -636,6 +681,31 @@ namespace IOT
             
             //reset actuators
             resetActuators();
+        }
+
+        /// <summary>
+        /// force white cube to identify all of its sensors immediatly
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pingSensorsButton_Click(object sender, EventArgs e)
+        {
+            m_WhiteCube.SendMQTTCommand(eWhiteCubeCommand.Identify);
+        }
+
+        /// <summary>
+        /// force white cube to update statuses from all of its sensors immediatly
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void updateSensorsStatusButton_Click(object sender, EventArgs e)
+        {
+            m_WhiteCube.SendMQTTCommand(eWhiteCubeCommand.UpdateStatus);
+        }
+
+        private void connectMQTTServerButton_Click(object sender, EventArgs e)
+        {
+            m_WhiteCube.Connect();
         }
     }
 }

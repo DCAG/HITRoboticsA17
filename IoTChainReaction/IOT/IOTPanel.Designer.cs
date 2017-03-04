@@ -63,6 +63,13 @@
             this.resetButton = new System.Windows.Forms.Button();
             this.RunTimeLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.pingSensorsButton = new System.Windows.Forms.Button();
+            this.lightSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.dthSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.reedSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.buttonSensorIdTimeLabel = new System.Windows.Forms.Label();
+            this.updateSensorsStatusButton = new System.Windows.Forms.Button();
+            this.connectMQTTServerButton = new System.Windows.Forms.Button();
             this.ActuatorsGroupBox.SuspendLayout();
             this.RGBLedGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -77,7 +84,7 @@
             this.ActuatorsGroupBox.Controls.Add(this.StepMotorButton);
             this.ActuatorsGroupBox.Controls.Add(this.LedButton);
             this.ActuatorsGroupBox.Controls.Add(this.ServoMotorButton);
-            this.ActuatorsGroupBox.Location = new System.Drawing.Point(406, 84);
+            this.ActuatorsGroupBox.Location = new System.Drawing.Point(476, 84);
             this.ActuatorsGroupBox.Margin = new System.Windows.Forms.Padding(2);
             this.ActuatorsGroupBox.Name = "ActuatorsGroupBox";
             this.ActuatorsGroupBox.Padding = new System.Windows.Forms.Padding(2);
@@ -238,6 +245,7 @@
             // 
             // ServoMotorTextBox
             // 
+            this.ServoMotorTextBox.BackColor = System.Drawing.SystemColors.Control;
             this.ServoMotorTextBox.Location = new System.Drawing.Point(76, 166);
             this.ServoMotorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.ServoMotorTextBox.Name = "ServoMotorTextBox";
@@ -288,6 +296,12 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.updateSensorsStatusButton);
+            this.groupBox1.Controls.Add(this.buttonSensorIdTimeLabel);
+            this.groupBox1.Controls.Add(this.reedSensorIdTimeLabel);
+            this.groupBox1.Controls.Add(this.dthSensorIdTimeLabel);
+            this.groupBox1.Controls.Add(this.lightSensorIdTimeLabel);
+            this.groupBox1.Controls.Add(this.pingSensorsButton);
             this.groupBox1.Controls.Add(this.ReedSensorTextBox);
             this.groupBox1.Controls.Add(this.ButtonSensorTextBox);
             this.groupBox1.Controls.Add(this.DTHSensorTextBox);
@@ -301,14 +315,14 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(346, 396);
+            this.groupBox1.Size = new System.Drawing.Size(442, 396);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Sensors";
             // 
             // ReedSensorTextBox
             // 
-            this.ReedSensorTextBox.Location = new System.Drawing.Point(215, 332);
+            this.ReedSensorTextBox.Location = new System.Drawing.Point(307, 332);
             this.ReedSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.ReedSensorTextBox.Multiline = true;
             this.ReedSensorTextBox.Name = "ReedSensorTextBox";
@@ -330,7 +344,7 @@
             // 
             // DTHSensorTextBox
             // 
-            this.DTHSensorTextBox.Location = new System.Drawing.Point(215, 140);
+            this.DTHSensorTextBox.Location = new System.Drawing.Point(307, 140);
             this.DTHSensorTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.DTHSensorTextBox.Multiline = true;
             this.DTHSensorTextBox.Name = "DTHSensorTextBox";
@@ -354,7 +368,7 @@
             // 
             this.reedSensorButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("reedSensorButton.BackgroundImage")));
             this.reedSensorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.reedSensorButton.Location = new System.Drawing.Point(188, 210);
+            this.reedSensorButton.Location = new System.Drawing.Point(280, 210);
             this.reedSensorButton.Margin = new System.Windows.Forms.Padding(2);
             this.reedSensorButton.Name = "reedSensorButton";
             this.reedSensorButton.Size = new System.Drawing.Size(128, 156);
@@ -381,7 +395,7 @@
             this.DTHSensorButton.BackColor = System.Drawing.SystemColors.ControlDark;
             this.DTHSensorButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("DTHSensorButton.BackgroundImage")));
             this.DTHSensorButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.DTHSensorButton.Location = new System.Drawing.Point(188, 30);
+            this.DTHSensorButton.Location = new System.Drawing.Point(280, 30);
             this.DTHSensorButton.Margin = new System.Windows.Forms.Padding(2);
             this.DTHSensorButton.Name = "DTHSensorButton";
             this.DTHSensorButton.Size = new System.Drawing.Size(128, 156);
@@ -406,7 +420,7 @@
             // 
             // startSmartChainButton
             // 
-            this.startSmartChainButton.Location = new System.Drawing.Point(406, 10);
+            this.startSmartChainButton.Location = new System.Drawing.Point(476, 10);
             this.startSmartChainButton.Margin = new System.Windows.Forms.Padding(2);
             this.startSmartChainButton.Name = "startSmartChainButton";
             this.startSmartChainButton.Size = new System.Drawing.Size(105, 62);
@@ -422,9 +436,9 @@
             this.label1.Location = new System.Drawing.Point(9, 7);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(168, 26);
+            this.label1.Size = new System.Drawing.Size(150, 26);
             this.label1.TabIndex = 4;
-            this.label1.Text = "Arduino State   :";
+            this.label1.Text = "Arduino State:";
             // 
             // label2
             // 
@@ -433,9 +447,9 @@
             this.label2.Location = new System.Drawing.Point(9, 41);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(169, 26);
+            this.label2.Size = new System.Drawing.Size(147, 26);
             this.label2.TabIndex = 5;
-            this.label2.Text = "WhiteBox State:";
+            this.label2.Text = "MQTT Server:";
             // 
             // whiteCubeConnectionStateLabel
             // 
@@ -463,7 +477,7 @@
             // 
             // resetButton
             // 
-            this.resetButton.Location = new System.Drawing.Point(697, 10);
+            this.resetButton.Location = new System.Drawing.Point(767, 10);
             this.resetButton.Margin = new System.Windows.Forms.Padding(2);
             this.resetButton.Name = "resetButton";
             this.resetButton.Size = new System.Drawing.Size(105, 62);
@@ -476,7 +490,7 @@
             // 
             this.RunTimeLabel.AutoSize = true;
             this.RunTimeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
-            this.RunTimeLabel.Location = new System.Drawing.Point(530, 46);
+            this.RunTimeLabel.Location = new System.Drawing.Point(600, 46);
             this.RunTimeLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.RunTimeLabel.Name = "RunTimeLabel";
             this.RunTimeLabel.Size = new System.Drawing.Size(96, 26);
@@ -487,18 +501,87 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));
-            this.label4.Location = new System.Drawing.Point(530, 10);
+            this.label4.Location = new System.Drawing.Point(600, 10);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(112, 26);
             this.label4.TabIndex = 10;
             this.label4.Text = "Run Time:";
             // 
+            // pingSensorsButton
+            // 
+            this.pingSensorsButton.Enabled = false;
+            this.pingSensorsButton.Location = new System.Drawing.Point(173, 118);
+            this.pingSensorsButton.Name = "pingSensorsButton";
+            this.pingSensorsButton.Size = new System.Drawing.Size(90, 69);
+            this.pingSensorsButton.TabIndex = 8;
+            this.pingSensorsButton.Text = "Ping sensors";
+            this.pingSensorsButton.UseVisualStyleBackColor = true;
+            this.pingSensorsButton.Click += new System.EventHandler(this.pingSensorsButton_Click);
+            // 
+            // lightSensorIdTimeLabel
+            // 
+            this.lightSensorIdTimeLabel.AutoSize = true;
+            this.lightSensorIdTimeLabel.Location = new System.Drawing.Point(159, 34);
+            this.lightSensorIdTimeLabel.Name = "lightSensorIdTimeLabel";
+            this.lightSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.lightSensorIdTimeLabel.TabIndex = 9;
+            this.lightSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // dthSensorIdTimeLabel
+            // 
+            this.dthSensorIdTimeLabel.AutoSize = true;
+            this.dthSensorIdTimeLabel.Location = new System.Drawing.Point(226, 61);
+            this.dthSensorIdTimeLabel.Name = "dthSensorIdTimeLabel";
+            this.dthSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.dthSensorIdTimeLabel.TabIndex = 10;
+            this.dthSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // reedSensorIdTimeLabel
+            // 
+            this.reedSensorIdTimeLabel.AutoSize = true;
+            this.reedSensorIdTimeLabel.Location = new System.Drawing.Point(226, 349);
+            this.reedSensorIdTimeLabel.Name = "reedSensorIdTimeLabel";
+            this.reedSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.reedSensorIdTimeLabel.TabIndex = 11;
+            this.reedSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // buttonSensorIdTimeLabel
+            // 
+            this.buttonSensorIdTimeLabel.AutoSize = true;
+            this.buttonSensorIdTimeLabel.Location = new System.Drawing.Point(159, 325);
+            this.buttonSensorIdTimeLabel.Name = "buttonSensorIdTimeLabel";
+            this.buttonSensorIdTimeLabel.Size = new System.Drawing.Size(49, 13);
+            this.buttonSensorIdTimeLabel.TabIndex = 12;
+            this.buttonSensorIdTimeLabel.Text = "00:00:00";
+            // 
+            // updateSensorsStatusButton
+            // 
+            this.updateSensorsStatusButton.Enabled = false;
+            this.updateSensorsStatusButton.Location = new System.Drawing.Point(173, 209);
+            this.updateSensorsStatusButton.Name = "updateSensorsStatusButton";
+            this.updateSensorsStatusButton.Size = new System.Drawing.Size(90, 69);
+            this.updateSensorsStatusButton.TabIndex = 13;
+            this.updateSensorsStatusButton.Text = "Update status";
+            this.updateSensorsStatusButton.UseVisualStyleBackColor = true;
+            this.updateSensorsStatusButton.Click += new System.EventHandler(this.updateSensorsStatusButton_Click);
+            // 
+            // connectMQTTServerButton
+            // 
+            this.connectMQTTServerButton.Location = new System.Drawing.Point(348, 39);
+            this.connectMQTTServerButton.Name = "connectMQTTServerButton";
+            this.connectMQTTServerButton.Size = new System.Drawing.Size(109, 36);
+            this.connectMQTTServerButton.TabIndex = 11;
+            this.connectMQTTServerButton.Text = "Connect MQTT Server";
+            this.connectMQTTServerButton.UseVisualStyleBackColor = true;
+            this.connectMQTTServerButton.Click += new System.EventHandler(this.connectMQTTServerButton_Click);
+            // 
             // IOTPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(824, 496);
+            this.ClientSize = new System.Drawing.Size(889, 496);
+            this.Controls.Add(this.connectMQTTServerButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.RunTimeLabel);
             this.Controls.Add(this.resetButton);
@@ -564,6 +647,13 @@
         private System.Windows.Forms.Button resetButton;
         private System.Windows.Forms.Label RunTimeLabel;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button updateSensorsStatusButton;
+        private System.Windows.Forms.Label buttonSensorIdTimeLabel;
+        private System.Windows.Forms.Label reedSensorIdTimeLabel;
+        private System.Windows.Forms.Label dthSensorIdTimeLabel;
+        private System.Windows.Forms.Label lightSensorIdTimeLabel;
+        private System.Windows.Forms.Button pingSensorsButton;
+        private System.Windows.Forms.Button connectMQTTServerButton;
     }
 }
 

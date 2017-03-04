@@ -11,7 +11,7 @@ namespace SmartChainLib
     public delegate void LightSensorStateChangeDelegate(int i_Value);
     public delegate void ReedSensorStateChangeDelegate();
     public delegate void DTHSensorStateChangeDelegate(float i_Tempeprature, float i_Humidity);
-
+    public delegate void SensorIdentificationNotificationDelegate(eWhiteCubeSensor i_Sensor);
     public class WhiteCube
     {
         private string m_HostName;
@@ -22,6 +22,7 @@ namespace SmartChainLib
 
         MqttClient m_WhiteCubeClient;
 
+        public event SensorIdentificationNotificationDelegate SensorIdentificationNotification;
         public event WhiteCubeConnectionStatusChangeDelegate WhiteCubeConnectionStatusChange;
         public event ButtonSensorStateChangeDelegate ButtonSensorStateChange;
         public event LightSensorStateChangeDelegate LightSensorStateChange;
@@ -154,28 +155,60 @@ namespace SmartChainLib
             {
                 dynamic messageJson = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(e.Message));
 
-                if (messageJson.ipaddress != null) // Ignore EXISTENCE notification messages (with ipaddress)
-                    return; 
-                if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
+                if (messageJson.ipaddress != null) // EXISTENCE notification messages (with ipaddress) are used for identification (or ping)
                 {
-                    OnButtonSensorStateChange();
+                    if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
+                    {
+                        OnSensorExistenceNotification(eWhiteCubeSensor.button);
+                    }
+                    else if ((string)messageJson.type == eWhiteCubeSensor.light.ToString())
+                    {
+                        OnSensorExistenceNotification(eWhiteCubeSensor.light);
+                    }
+                    else if ((string)messageJson.type == eWhiteCubeSensor.reed.ToString())
+                    {
+                        OnSensorExistenceNotification(eWhiteCubeSensor.reed);
+                    }
+                    else if ((string)messageJson.type == eWhiteCubeSensor.dth.ToString())
+                    {
+                        OnSensorExistenceNotification(eWhiteCubeSensor.dth);
+                    }
                 }
-                else if ((string)messageJson.type == eWhiteCubeSensor.light.ToString())
+                else
                 {
-                    OnLightSensorStateChange((int)messageJson.value); 
-                }
-                else if ((string)messageJson.type == eWhiteCubeSensor.reed.ToString())
-                {
-                    OnReedSensorStateChange();
-                }
-                else if ((string)messageJson.type == eWhiteCubeSensor.dth.ToString())
-                {
-                    OnDTHSensorStateChange((float)messageJson.temperature, (float)messageJson.humidity); 
+                    if ((string)messageJson.type == eWhiteCubeSensor.button.ToString())
+                    {
+                        OnButtonSensorStateChange();
+                    }
+                    else if ((string)messageJson.type == eWhiteCubeSensor.light.ToString())
+                    {
+                        OnLightSensorStateChange((int)messageJson.value);
+                    }
+                    else if ((string)messageJson.type == eWhiteCubeSensor.reed.ToString())
+                    {
+                        OnReedSensorStateChange();
+                    }
+                    else if ((string)messageJson.type == eWhiteCubeSensor.dth.ToString())
+                    {
+                        OnDTHSensorStateChange((float)messageJson.temperature, (float)messageJson.humidity);
+                    }
                 }
             }
             catch
             {
                 // write to log (debug?) - maybe convertion failed or format is not json
+            }
+        }
+
+        /// <summary>
+        /// Notify all 'SensorExistenceNotification' event subscribers that a sensor identification message was sent
+        /// </summary>
+        /// <param name="i_Sensor"></param>
+        private void OnSensorExistenceNotification(eWhiteCubeSensor i_Sensor)
+        {
+            if(SensorIdentificationNotification != null)
+            {
+                SensorIdentificationNotification.Invoke(i_Sensor);
             }
         }
 
@@ -224,6 +257,25 @@ namespace SmartChainLib
             if(DTHSensorStateChange != null)
             {
                 DTHSensorStateChange.Invoke(i_Temperature, i_Humidity);
+            }
+        }
+
+        /// <summary>
+        /// Send command to the MQTT server
+        /// </summary>
+        /// <param name="i_Command"></param>
+        public void SendMQTTCommand(eWhiteCubeCommand i_Command)
+        {
+            switch (i_Command)
+            {
+                case eWhiteCubeCommand.Identify:
+                    m_WhiteCubeClient.Publish(string.Format(@"{0}/device/command/identify", m_UserName.ToLower()), Encoding.UTF8.GetBytes("{ \"1\":\"1\" }"));
+                    break;
+                case eWhiteCubeCommand.UpdateStatus:
+                    m_WhiteCubeClient.Publish(string.Format(@"{0}/device/command", m_UserName.ToLower()), Encoding.UTF8.GetBytes("{ \"1\":\"1\" }"));
+                    break;
+                default:
+                    break;
             }
         }
     }

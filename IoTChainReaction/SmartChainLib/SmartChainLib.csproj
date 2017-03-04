@@ -63,6 +63,7 @@
     <Compile Include="Actuators\eServoMotorState.cs" />
     <Compile Include="Actuators\eStepMotorState.cs" />
     <Compile Include="eArduinoConnectionStatus.cs" />
+    <Compile Include="eWhiteCubeCommand.cs" />
     <Compile Include="eWhiteCubeConnectionStatus.cs" />
     <Compile Include="eWhiteCubeSensor.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
